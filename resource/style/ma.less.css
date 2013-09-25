@@ -1,0 +1,70 @@
+/* @CHARSET "UTF-8"; */
+
+/* vars 
+******************************/
+
+@maHeaderBackColor: navy;
+@maHeaderHeight: 80px;
+
+@maFooterBackColor: lightGray;
+@maFooterHeight: 50px;
+
+@maBodyBackColor: whiteSmoke;
+
+
+/* mixins 
+******************************/
+
+.maCorners (@radius: 3px) {
+	-webkit-border-radius: @radius;
+	-moz-border-radius: @radius;
+	border-radius: @radius;
+}
+
+.maShadow (@color: limegreen; @blur: 10px; @spread: 3px; @x: 2px; @y: 2px) {
+	-webkit-box-shadow: @x @y @blur @spread @color;
+	-moz-box-shadow: @x @y @blur @spread @color;
+	box-shadow: @x @y @blur @spread @color;
+}
+
+
+/* styles 
+******************************/
+
+body {
+	margin: 0px;
+}
+
+#maHeader {
+	background-color: @maHeaderBackColor;
+	left: 0px; width: 100%;
+	top: 0px; height: @maHeaderHeight;
+}
+
+#maBody {
+	background-color: @maBodyBackColor;
+	position: absolute;
+	left: 0px; width: 100%;
+	top: @maHeaderHeight; bottom: @maFooterHeight;
+}
+
+#maFooter {
+	background-color: @maFooterBackColor;
+	position: absolute;
+	left: 0px; width: 100%;
+	bottom: 0px; height: @maFooterHeight;
+}
+
+.maTextBox {
+	width: 200px;
+	.maCorners;
+}
+
+.maTextBox:focus {
+	.maShadow(orange);
+}
+
+.maDateBox:focus {
+	.maShadow();
+}
+
