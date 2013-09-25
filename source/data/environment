@@ -1,0 +1,4 @@
+host = localhost
+bd = imywama
+language = en
+authMethod = anonymous

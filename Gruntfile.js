@@ -36,6 +36,7 @@ module.exports= function(grunt){
 		copy: {
 			dev: { files: [
 				{expand: true, cwd: "source/web", src: "**", dest: "<%= cfg.webDir %>" },
+				{expand: true, cwd: "source/data", src: "**", dest: "<%= cfg.usrDir %>/data" },
 				{expand: true, cwd: "source/server", src: "**", dest: "<%= cfg.usrDir %>/source" }
 				]
 			},

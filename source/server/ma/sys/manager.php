@@ -1,21 +1,14 @@
 <?php
 class ma_sys_manager{
 	
-	const ENVIRONMENT_VARS= 'dbServer,db,language,authMethod';
-	const ENVIRONMENT_FILE= 'config/environment';
+	const ENVIRONMENT_ATTRIBUTES= 'host,db,language,authMethod';
+	const ENVIRONMENT_FILE= 'data/environment';
 	const ENVIRONMENT_AUTHMETHODS= 'login,anonymous,http';
 	
 	public $usrDir, $webDir;
-	
-	// Environment
-	public $dbServer= 'localhost';
-	public $db= 'mia';
-	public $language= 'en';
-	
-	private $session;
-	private $texts;
-	private $initialized;
-	
+	public $texts;
+	public $environment;
+	public $session;
 	
 
 	public function __construct(){
@@ -31,17 +24,16 @@ class ma_sys_manager{
 
 		// MA initialization
 
-		$this->initialized= false;
 		$this->usrDir= substr(__FILE__, 0, -strlen("/source/ma/sys/manager.php"));
 		$this->webDir= substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'],'/'));
 		
+		$this->environment= array();
 		$envFilename= $this->usrDir . '/' . self::ENVIRONMENT_FILE;
 		if (file_exists($envFilename)){
 			foreach(file($envFilename, FILE_IGNORE_NEW_LINES) as $envLine){
 				list($property,$value)= explode('=',$envLine);
-				$this[$property]= $value;
+				$this->environment[trim($property)]= trim($value);
 			}
-			$this->initialized= true;
 		}
 		
 		require_once($this->usrDir . "/source/ma/sys/texts.php");
@@ -83,7 +75,6 @@ class ma_sys_manager{
 	
 	public function newRequest(){
 		echo "<p>New Request received ....</p>";
-		if ($this->initialized) echo "<p>System Initialized</p>"; else echo "<p>Warning: the system is not initialized.</p>"; 
 		
 		
 		$sessionId= isset(	$_COOKIE['SESSION_ID']	) ?  $_COOKIE['SESSION_ID'] : '';
