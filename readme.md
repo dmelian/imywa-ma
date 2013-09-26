@@ -1,6 +1,6 @@
 # MA - Mysql Application
 
-This project is part of [imywa](http://sourceforge.net/imywa). More especific it is a trying to clean it. 
+This project is part of [imywa](http://sourceforge.net/projects/imywa). More especific it is a trying to clean it. 
 
 ###Authors
 
