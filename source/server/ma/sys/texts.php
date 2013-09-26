@@ -61,7 +61,7 @@ class ma_sys_texts{
 				}
 			} 
 			fclose($f);
-			$this->fileIds[$id]= 1;
+			$this->fileIds[$fileId]= 1;
 		}
 	}
 		

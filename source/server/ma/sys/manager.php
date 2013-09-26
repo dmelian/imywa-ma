@@ -1,21 +1,19 @@
 <?php
 class ma_sys_manager{
 	
-	const ENVIRONMENT_ATTRIBUTES= 'host,db,language,authMethod';
+//	const ENVIRONMENT_ATTRIBUTES= 'host,db,language,authMethod';
 	const ENVIRONMENT_FILE= 'data/environment';
-	const ENVIRONMENT_AUTHMETHODS= 'login,anonymous,http';
+//	const ENVIRONMENT_AUTHMETHODS= 'login,anonymous,http';
 	
-	public $usrDir, $webDir;
-	public $texts;
 	public $environment;
-	public $session;
+	public $texts;
 	
 
 	public function __construct(){
 
 		// PHP Initialization
 
-		ini_set( 'display_errors', 'stderr' );
+		ini_set( 'display_errors', 'stdout' );
 		ini_set( 'memory_limit', -1 );
 		ini_set( 'max_execution_time', 40 );
 		error_reporting( 'E_STRICT' );
@@ -24,11 +22,11 @@ class ma_sys_manager{
 
 		// MA initialization
 
-		$this->usrDir= substr(__FILE__, 0, -strlen("/source/ma/sys/manager.php"));
-		$this->webDir= substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'],'/'));
-		
 		$this->environment= array();
-		$envFilename= $this->usrDir . '/' . self::ENVIRONMENT_FILE;
+		$this->environment['usrDir']= substr(__FILE__, 0, -strlen("/source/ma/sys/manager.php"));
+		$this->environment['webDir']= substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'],'/'));
+		
+		$envFilename= $this->environment['usrDir'] . '/' . self::ENVIRONMENT_FILE;
 		if (file_exists($envFilename)){
 			foreach(file($envFilename, FILE_IGNORE_NEW_LINES) as $envLine){
 				list($property,$value)= explode('=',$envLine);
@@ -36,7 +34,7 @@ class ma_sys_manager{
 			}
 		}
 		
-		require_once($this->usrDir . "/source/ma/sys/texts.php");
+		require_once($this->environment['usrDir'] . "/source/ma/sys/texts.php");
 		$this->texts= new ma_sys_texts();
 	}
 
@@ -46,7 +44,7 @@ class ma_sys_manager{
 	
 	public static function phpErrorHandler( $errno, $errstr, $errfile, $errline, $errcontext ){
 		global $_MANAGER;
-		echo "Error $errno: $errstr";
+		echo "<p>Error $errno: $errstr on file $errfile at line $errline</p>";
 		//TODO: Logs the error and set error count. If is an warning continue, else return true or die.
 		return true;
 	}
@@ -55,11 +53,8 @@ class ma_sys_manager{
 	public static function phpClassLoader( $className ){
 		global $_MANAGER;
 		
-		$classModule= ($last_= strrpos($className,'_')) > 0 ? substr($className, 0, $last_): '';
-		if (isset($_MANAGER->texts)) {
-			$_MANAGER->texts->loadFile($classModule, $_MANAGER->getSourceFilename($classModule)."/texts.{$_MANAGER->language}");
-		}
-		require_once $_MANAGER->getSourceFilename($className).'.php';
+		$filePath= explode( '_', $className);
+		require_once "{$_MANAGER->environment['usrDir']}/source/".implode('/',$filePath).'.php';
 	}
 	
 
@@ -67,22 +62,10 @@ class ma_sys_manager{
 	
 // METHODS.	
 	
-	public function getSourceFilename($id){
-		$filePath= explode('_',$id);
-		return "{$this->usrDir}/source/".implode('/',$filePath);
-	}
-	
 	
 	public function newRequest(){
-		echo "<p>New Request received ....</p>";
-		
-		
-		$sessionId= isset(	$_COOKIE['SESSION_ID']	) ?  $_COOKIE['SESSION_ID'] : '';
-		if(	$isAjax= isset(	 $_SERVER['HTTP_X_REQUESTED_WITH'] ) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
-			$ajaxCaller= isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
-		}
-		
-		
+		$session= ma_sys_session::create($this->environment);
+		$session->OnNewRequest();
 		
 	}
 }

@@ -52,10 +52,21 @@ module.exports= function(grunt){
 				expand: true,
 				src: "<%= cfg.webDir %>/*.php"
 			}
+		},
+		
+		createUsrStruct:{
+			dev: { src: "<%= cfg.usrDir %>"}
 		}
+		
 
 	});
 
+	grunt.task.registerMultiTask("createUsrStruct","Create the usr Directory base structure", function(){
+		grunt.file.mkdir(this.data.src + "/run", "777"  );//[, mode])
+//		grunt.file.write(filepath, contents [, options])		
+	});
+
+	
 	grunt.loadNpmTasks("grunt-contrib-concat");
 	grunt.loadNpmTasks("grunt-contrib-less");
 	grunt.loadNpmTasks("grunt-contrib-copy");
@@ -63,6 +74,6 @@ module.exports= function(grunt){
 	grunt.loadNpmTasks("grunt-text-replace");
 
 	grunt.registerTask("build", [ "clean:build", "concat:build", "less:build", "copy:build" ] ); 
-	grunt.registerTask("send", [ "clean:web", "concat:dev", "less:dev", "copy:dev", "replace:dev" ] );
+	grunt.registerTask("send", [ "clean:web", "concat:dev", "less:dev", "copy:dev", "replace:dev", "createUsrStruct:dev" ] );
 
 };
