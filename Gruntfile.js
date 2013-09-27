@@ -62,8 +62,10 @@ module.exports= function(grunt){
 	});
 
 	grunt.task.registerMultiTask("createUsrStruct","Create the usr Directory base structure", function(){
-		grunt.file.mkdir(this.data.src + "/run", "777"  );//[, mode])
-//		grunt.file.write(filepath, contents [, options])		
+		var fs = require('fs');
+		grunt.file.mkdir( this.data.src + "/run/sessions", 0777 );
+		fs.chmodSync(this.data.src + "/run/sessions", '777'); // The directory is created with 0775 mode
+//		grunt.file.write(filepath, contents [, options])
 	});
 
 	

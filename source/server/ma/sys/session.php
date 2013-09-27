@@ -59,6 +59,11 @@ class ma_sys_session extends ma_object {
 	
 	private $environment;
 	private $sessionId, $sessionDir;
+	private $sequence= 0;
+	private $createTime, $lastRequestTime;
+	private $request;
+	private $user, $password, $authenticated=false;
+	private $apps= array();
 	
 	public static function create($environment) {
 		
@@ -78,7 +83,7 @@ class ma_sys_session extends ma_object {
 	public function __construct($environment){
 		parent::__construct();
 		$this->environment= $environment;
-		echo "session.constructor";
+		echo "<p>creating a new session</p>";
 		
 	
 		// Create the session folder
@@ -100,24 +105,99 @@ class ma_sys_session extends ma_object {
 			} else  $this->sessionId= '';
 		} while (!$this->sessionId && ($attemps++ < 5));
 		
-		if($this->sessionId) setcookie( 'SESSION_ID', $this->sessionId ); //TODO put expires date an others params
+		if($this->sessionId) {
+			setcookie( 'SESSION_ID', $this->sessionId ); //TODO put expires date an others params
+			$this->createTime= date('Y-m-d H:i:s');
+		}
 		
 	}
 
-	
-	public function initialize(){
-		if($isAjax= isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
-			$ajaxCaller= isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : '';
+	private function serialize(){
+		$sessionFile= new __syncFile( "{$this->sessionDir}/session" );
+		if ( !$sessionFile->setContent( serialize( $this ) ) ) {
+			//TODO: LOG $sessionFile->errormsg Mensaje 'No se ha podido guardar su sesion'
 		}
+	}
+	
+	
+	private function initialize(){
 		
 	}
 	
 	
 	public function OnNewRequest(){
+
+		$this->lastRequestTime= date('Y-m-d H:i:s');
 		if (!$this->sessionId) exit( $this->caption('ERR_CREATESESSION') );
-		echo "<p>New request for session $this->sessionId...</p>"; 
+		if (!$this->authenticated) $this->authenticate();
+		
+		if ($this->authenticated) {
+			$this->extractRequestProperties();
+			if (!$this->sequence){
+				//TODO: Initialize the default app and its start form.
+				
+				$this->sequence++;
+			}
+			$this->executeRequest();
+		}
+		$this->serialize();
 	}
 
+	private function authenticate(){
+		//TODO depending on environment authMethod, authenticated the new session.
+		//while the session isn't authenticated, it does not execute any request nor action.
+		
+		switch ($this->environment['authMethod']){
+			
+		case 'anonymous':
+			$this->user= 'anonymous';
+			$this->password= '';
+			$this->authenticated= true;
+			break;
+			
+		case 'login':
+		case 'http':
+			
+		default:
+			
+			echo "The authenticated method {$this->environment['authMethod']} is not already implemented."
+			
+		}
+	}
+	
+	
+	private function extractRequestProperties(){
+		
+		unset($this->request); $this->request= array();
+		$this->request['isAjax']= isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) 
+				? $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest' : false;
+		if($this->request['isAjax']) {
+			$this->request['ajaxCaller']= isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : '';
+		}
 
+		$this->request['remoteIp']= $_SERVER['REMOTE_ADDR'];
+		$this->request['remotePort']= $_SERVER['REMOTE_PORT'];
+
+		$this->request['action']= substr($_SERVER['SCRIPT_NAME']
+				, strrpos( $_SERVER['SCRIPT_NAME'], '/' ) + 1
+				, strrpos( $_SERVER['SCRIPT_NAME'], '.' ) - strlen( $_SERVER['SCRIPT_NAME'] ) );
+		$this->request['target']= urldecode( 
+				substr( $_SERVER['QUERY_STRING'], 0, strpos($_SERVER['QUERY_STRING'], '&') ) 
+				);
+		$this->request['options']= $_GET;
+		if ($this->request['target']) unset($this->request['options'][$this->request['target']]);
+		
+	}
+	
+	private function executeRequest(){
+		
+		echo "<p>New request for session $this->sessionId...</p>";
+		echo "<p>Request sequence no. {$this->sequence}</p>";
+		echo "<p>Created {$this->createTime} Last Request {$this->lastRequestTime}</p>";
+		echo "<pre>" . print_r($this, true) . "</pre>";
+		
+		
+	}
+	
 
 }
