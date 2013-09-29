@@ -2,6 +2,7 @@
 
 class ma_sys_application extends ma_object{
 	
+	private $appDir;
 	private $breadCrumb= array();
 	private $stackTop= 0;
 	
@@ -23,8 +24,8 @@ class ma_sys_application extends ma_object{
 		array_push($this->breadCrumb, $caption);
 		$fname = "{$this->appDir}/forms/F" . str_pad(++$this->stacktop, 4, '0', STR_PAD_LEFT);
 		$sessionFile= new ma_lib_syncFile($fname);
-		if (!$sessionFile->setContent(serialize($form))) {
-			$_LOG->log("Error: No se ha podido serializar el formulario ". get_class($form).".");
+		if ( ! $sessionFile->setContent( serialize( $form ) ) ) {
+			$this->log( $this->caption( 'ERR_SERIALIZEFORM', array( 'form' => get_class( $form ) ) ), 'error' );
 		}
 	
 	}
