@@ -65,6 +65,8 @@ module.exports= function(grunt){
 		var fs = require('fs');
 		grunt.file.mkdir( this.data.src + "/run/sessions", 0777 );
 		fs.chmodSync(this.data.src + "/run/sessions", '777'); // The directory is created with 0775 mode
+		grunt.file.mkdir( this.data.src + "/run/log", 0777 );
+		fs.chmodSync(this.data.src + "/run/log", '777');
 //		grunt.file.write(filepath, contents [, options])
 	});
 
