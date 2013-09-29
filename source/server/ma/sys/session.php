@@ -64,6 +64,7 @@ class ma_sys_session extends ma_object {
 	private $request;
 	private $user, $password, $authenticated=false;
 	private $apps= array();
+	private $currentApp;
 	
 	public static function create($environment) {
 		
@@ -120,27 +121,28 @@ class ma_sys_session extends ma_object {
 	}
 	
 	
-	private function initialize(){
-		
-	}
-	
 	
 	public function OnNewRequest(){
 
 		$this->lastRequestTime= date('Y-m-d H:i:s');
-		if (!$this->sessionId) exit( $this->caption('ERR_CREATESESSION') );
+		if (!$this->sessionId) {
+			//TODO LOG create session error.
+			exit( $this->caption('ERR_CREATESESSION') );
+		}
 		if (!$this->authenticated) $this->authenticate();
 		
 		if ($this->authenticated) {
 			$this->extractRequestProperties();
-			if (!$this->sequence){
-				//TODO: Initialize the default app and its start form.
-				
-				$this->sequence++;
+			if (!$this->currentApp){
+				$startApp= $this->startDefaultApplication();
+				$this->apps[$startApp->appName]= $startApp;
+				$this->currentApp=$startApp->appName; 
 			}
+			$this->sequence++;
 			$this->executeRequest();
 		}
 		$this->serialize();
+		
 	}
 
 	private function authenticate(){
@@ -160,7 +162,7 @@ class ma_sys_session extends ma_object {
 			
 		default:
 			
-			echo "The authenticated method {$this->environment['authMethod']} is not already implemented."
+			echo "The authenticated method {$this->environment['authMethod']} is not already implemented.";
 			
 		}
 	}
@@ -184,18 +186,30 @@ class ma_sys_session extends ma_object {
 		$this->request['target']= urldecode( 
 				substr( $_SERVER['QUERY_STRING'], 0, strpos($_SERVER['QUERY_STRING'], '&') ) 
 				);
-		$this->request['options']= $_GET;
+		$this->request['options']= array_merge($_GET, $_POST);
 		if ($this->request['target']) unset($this->request['options'][$this->request['target']]);
+		
+	}
+	
+	private function startDefaultApplication(){
+		return new mau_application();
 		
 	}
 	
 	private function executeRequest(){
 		
-		echo "<p>New request for session $this->sessionId...</p>";
+/*		echo "<p>New request for session $this->sessionId...</p>";
 		echo "<p>Request sequence no. {$this->sequence}</p>";
 		echo "<p>Created {$this->createTime} Last Request {$this->lastRequestTime}</p>";
 		echo "<pre>" . print_r($this, true) . "</pre>";
-		
+*/		
+
+		switch ($this->request['action']){
+			//TODO: Case the session actions (changeApp, ...)
+			
+			default:
+				$this->apps[$this->currentApp]->OnAction($this->request['action'], $this->request['target'], $this->request['options']);
+		}
 		
 	}
 	
