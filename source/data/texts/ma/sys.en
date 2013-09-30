@@ -1,5 +1,7 @@
+
 [application]
 ERR_SERIALIZEFORM	Serialize form error (form: $_form)
+ERR_UNSERIALIZEFORM	Unserialize form error
 
 [session]
 ERR_CREATESESSION	Create session error

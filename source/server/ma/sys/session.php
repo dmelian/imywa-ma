@@ -59,6 +59,8 @@ class ma_sys_session extends ma_object {
 	}
 
 	private function serialize(){
+		$this->checkPoint("Begin __CLASS__ :: __METHOD__");
+		
 		$sessionFile= new ma_lib_syncFile( "{$this->sessionDir}/session" );
 		if ( !$sessionFile->setContent( serialize( $this ) ) ) {
 			//TODO: LOG $sessionFile->errormsg Mensaje 'No se ha podido guardar su sesion'
@@ -68,7 +70,8 @@ class ma_sys_session extends ma_object {
 	
 	
 	public function OnNewRequest(){
-
+		$this->checkPoint("Begin __CLASS__ :: __METHOD__");
+		
 		$this->lastRequestTime= date('Y-m-d H:i:s');
 		if (!$this->sessionId) {
 			//TODO LOG create session error.
@@ -93,6 +96,8 @@ class ma_sys_session extends ma_object {
 	private function authenticate(){
 		//TODO depending on environment authMethod, authenticated the new session.
 		//while the session isn't authenticated, it does not execute any request nor action.
+		$this->checkPoint("Begin __CLASS__ :: __METHOD__");
+		
 		
 		switch ($this->environment['authMethod']){
 			
@@ -114,6 +119,7 @@ class ma_sys_session extends ma_object {
 	
 	
 	private function extractRequestProperties(){
+		$this->checkPoint("Begin __CLASS__ :: __METHOD__");
 		
 		unset($this->request); $this->request= array();
 		$this->request['isAjax']= isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) 
@@ -128,15 +134,20 @@ class ma_sys_session extends ma_object {
 		$this->request['action']= substr($_SERVER['SCRIPT_NAME']
 				, strrpos( $_SERVER['SCRIPT_NAME'], '/' ) + 1
 				, strrpos( $_SERVER['SCRIPT_NAME'], '.' ) - strlen( $_SERVER['SCRIPT_NAME'] ) );
-		$this->request['target']= urldecode( 
-				substr( $_SERVER['QUERY_STRING'], 0, strpos($_SERVER['QUERY_STRING'], '&') ) 
-				);
+		if ($targetEnd= strpos($_SERVER['QUERY_STRING'], '&') !== false ){
+			$this->request['target']= urldecode( substr( $_SERVER['QUERY_STRING'], 0, $targetEnd ); 
+		} else {
+			$this->request['target']= urldecode( $_SERVER['QUERY_STRING'] ); 
+		}
 		$this->request['options']= array_merge($_GET, $_POST);
 		if ($this->request['target']) unset($this->request['options'][$this->request['target']]);
 		
 	}
 	
 	private function startDefaultApplication(){
+		//	TODO Access to user data an create and initialize his default application.
+		$this->checkPoint("Begin __CLASS__ :: __METHOD__");
+		
 		return new mau_application();
 		
 	}
@@ -148,9 +159,13 @@ class ma_sys_session extends ma_object {
 		echo "<p>Created {$this->createTime} Last Request {$this->lastRequestTime}</p>";
 		echo "<pre>" . print_r($this, true) . "</pre>";
 */		
-
+		$this->checkPoint("Begin __CLASS__ :: __METHOD__");
+		
 		switch ($this->request['action']){
 			//TODO: Case the session actions (changeApp, ...)
+			case 'switchApp': case 'openApp': case 'closeApp': case 'logout':
+				echo "Session action {$this->request['action']}";
+				break;
 			
 			default:
 				$this->apps[$this->currentApp]->OnAction($this->request['action'], $this->request['target'], $this->request['options']);

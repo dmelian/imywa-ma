@@ -13,7 +13,7 @@ class ma_sys_manager{
 
 		// PHP Initialization
 
-		ini_set( 'display_errors', 'stdout' );
+		ini_set( 'display_errors', 'stderr' );
 		ini_set( 'memory_limit', -1 );
 		ini_set( 'max_execution_time', 40 );
 		error_reporting( 'E_STRICT' );
@@ -25,6 +25,7 @@ class ma_sys_manager{
 		$this->environment= array();
 		$this->environment['usrDir']= substr(__FILE__, 0, -strlen("/source/ma/sys/manager.php"));
 		$this->environment['webDir']= substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'],'/'));
+		$this->environment['showCodeCheckPoints']= true;
 		
 		$envFilename= $this->environment['usrDir'] . '/' . self::ENVIRONMENT_FILE;
 		if (file_exists($envFilename)){
@@ -64,7 +65,9 @@ class ma_sys_manager{
 	
 	
 	public function newRequest(){
+		echo "manager.newrequest";
 		$session= ma_sys_session::create($this->environment);
+		echo "manager.newrequest2";
 		$session->OnNewRequest();
 		
 	}

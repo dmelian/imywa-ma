@@ -68,6 +68,12 @@ class ma_object{
 		fclose($fp);
 	}
 	
+	//TODO debug and codeCheckPoints better on session dir.
 	protected function debug($var, $comment='') { $this->log($var, 'debug', $comment); }
+	
+	protected function checkPoint($msg) {
+		global $_MANAGER;
+		if ( $_MANAGER->environment['showCodeCheckPoints'] ) $this->log($msg, 'checkPoints');
+	}
 	
 }
