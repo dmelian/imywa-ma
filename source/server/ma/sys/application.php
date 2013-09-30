@@ -13,7 +13,6 @@ class ma_sys_application extends ma_object{
 		$this->log("Initiated action $action on target $target");
 		$this->log($options, '', 'ActionOptions');
 	}
-
 	
 	
 	// ----------------------------------------------------

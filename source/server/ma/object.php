@@ -6,6 +6,9 @@ class ma_object{
 	public function __construct() {
 		$this->loadTexts( get_called_class() );
 	}
+
+
+// TEXTS	
 	
 	protected function loadTexts($id, $fileName=''){
 		global $_MANAGER;
@@ -32,6 +35,9 @@ class ma_object{
 		
 		return $_MANAGER->texts->getDescription( get_called_class() . "_$id", $params ); 
 	}
+
+	
+// LOGS
 	
 	protected function log($msg, $section='log', $comment= ''){
 		//TODO Select section type (prefix / file)
@@ -49,21 +55,19 @@ class ma_object{
 			$prefix= gmdate('Y-m-d H:i:s') . ":\t";
 			break;
 		}
-		if (!file_exists($filename)){
-			$fp= fopen($filename, 'a+');
-			chmod($filename, 0666);
-		} else $fp= fopen($filename, 'a');
-			
-		if (!$comment) $comment= '--';
-		if ( is_array($msg) || is_object($msg) ){
-			$msg= strtr( "$comment\n" . print_r( $msg, TRUE ), array( "\n" => "\n\t" ) );
-		} else {
-			$msg= strtr( $msg, array( "\n" => "\n\t" ) );
-		}
-		fwrite($fp, "$prefix$msg\n");
 		
+		if (!file_exists($filename)){ $fp= fopen($filename, 'a+'); chmod($filename, 0666); } 
+		else $fp= fopen($filename, 'a');
+		
+		if (!$comment) $comment= '--';
+		if ( is_array($msg) || is_object($msg) ) {
+			$msg= strtr( "$comment\n" . print_r( $msg, TRUE ), array( "\n" => "\n\t" ) );
+		} else $msg= strtr( $msg, array( "\n" => "\n\t" ) );
+		
+		fwrite($fp, "$prefix$msg\n");
 		fclose($fp);
 	}
 	
+	protected function debug($var, $comment='') { $this->log($var, 'debug', $comment); }
 	
 }
