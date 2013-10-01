@@ -2,22 +2,24 @@
 
 class ma_sys_application extends ma_object{
 	
-	
-	
 	private $appDir;
 	private $breadCrumb= array();
 	private $stackTop= 0;
-	public function __construct(){
+	
+	public function __construct($environment){
 		//TODO Initialize the application.
+		$this->appDir= "{$environment['sessionDir']}/{$this->appName}";
+		$success= mkdir($this->appDir."/forms", 0777, true);
+		if ($success) $success= chmod($this->appDir, 0777);
+		if ($success) $success= chmod($this->appDir."/forms", 0777);
+		//TODO IF not success then log error and die. 
 		
-		
-		
+		//TODO Start the current form.
 		
 	}
 	
 	
 	public function OnAction($action, $target, $options){
-		$this->checkPoint("Begin __CLASS__ :: __METHOD__");
 		
 		switch ($action){
 		case 'openForm':
@@ -27,27 +29,32 @@ class ma_sys_application extends ma_object{
 				if (method_exists($form, 'OnSleep')) $form->OnSleep();
 				$this->formPush($form);
 			}
-			$formClass= strtr( $target, '/', '_' );
+			$formClass= trim(strtr( $target, '/', '_' ),"_ \t\n");
+			
 			if ( class_exists( $formClass ) ) {
 				$form= new $formClass(); //TODO Pass the options as __construct args?
-				echo $form->encode();
+				$uid='norl';
+				$response= $form->OnOpen($uid, $options);
+				//$response= $form->OnAction( $action, $target, $options );
 				$this->formPush($form);
+				return $response;
 				
 			} else {
 				//TODO log error: not found form.
 				echo "No se encuentra el formulario '$formClass'";
+				//TODO return errorResponse object.
 			}
-			
 			break;
 			
 		case 'closeForm': case 'switchForm': case 'formCall': case 'formReturn':
 			break;
 			
-		default:	
-			echo "<p> Action on application {$this->appName}</p>";
-			echo "<pre>action: $action\ntarget: $target\noptions: ".print_r($options,true)."</pre>";
-			$this->log("Initiated action $action on target $target");
-			$this->log($options, '', 'ActionOptions');
+		default:
+			$form= $this->formPop();
+			$response= $form->OnAction($action, $target, $options);
+			$this->formPush($form);
+			return $response;
+			
 		}
 	}
 	

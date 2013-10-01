@@ -6,7 +6,7 @@ class ma_sys_session extends ma_object {
 	private $sessionId, $sessionDir;
 	private $sequence= 0;
 	private $createTime, $lastRequestTime;
-	private $request;
+	private $request; //Current request data (asoc array)
 	private $user, $password, $authenticated=false;
 	private $apps= array();
 	private $currentApp;
@@ -28,9 +28,6 @@ class ma_sys_session extends ma_object {
 	
 	public function __construct($environment){
 		parent::__construct();
-		$this->environment= $environment;
-		echo "<p>creating a new session</p>";
-		
 	
 		// Create the session folder
 		$sessionbasedir = "{$environment['usrDir']}/run/sessions/";
@@ -47,6 +44,7 @@ class ma_sys_session extends ma_object {
 				if ($success) $success= chmod($this->sessionDir, 0777);
 				if ($success) $success= mkdir($this->sessionDir."/temp");
 				if ($success) $success= chmod($this->sessionDir."/temp", 0777);
+				
 				if (!$success) $this->sessionId= '';
 			} else  $this->sessionId= '';
 		} while (!$this->sessionId && ($attemps++ < 5));
@@ -54,12 +52,14 @@ class ma_sys_session extends ma_object {
 		if($this->sessionId) {
 			setcookie( 'SESSION_ID', $this->sessionId ); //TODO put expires date an others params
 			$this->createTime= date('Y-m-d H:i:s');
+			$this->environment= $environment;
+			$this->environment['sessionDir']= $this->sessionDir;
+			$this->log("Session {$this->sessionId} created");
 		}
 		
 	}
 
 	private function serialize(){
-		$this->checkPoint("Begin __CLASS__ :: __METHOD__");
 		
 		$sessionFile= new ma_lib_syncFile( "{$this->sessionDir}/session" );
 		if ( !$sessionFile->setContent( serialize( $this ) ) ) {
@@ -70,7 +70,6 @@ class ma_sys_session extends ma_object {
 	
 	
 	public function OnNewRequest(){
-		$this->checkPoint("Begin __CLASS__ :: __METHOD__");
 		
 		$this->lastRequestTime= date('Y-m-d H:i:s');
 		if (!$this->sessionId) {
@@ -86,6 +85,7 @@ class ma_sys_session extends ma_object {
 				$this->apps[$startApp->appName]= $startApp;
 				$this->currentApp=$startApp->appName; 
 			}
+			
 			$this->sequence++;
 			$this->executeRequest();
 		}
@@ -96,7 +96,6 @@ class ma_sys_session extends ma_object {
 	private function authenticate(){
 		//TODO depending on environment authMethod, authenticated the new session.
 		//while the session isn't authenticated, it does not execute any request nor action.
-		$this->checkPoint("Begin __CLASS__ :: __METHOD__");
 		
 		
 		switch ($this->environment['authMethod']){
@@ -119,7 +118,6 @@ class ma_sys_session extends ma_object {
 	
 	
 	private function extractRequestProperties(){
-		$this->checkPoint("Begin __CLASS__ :: __METHOD__");
 		
 		unset($this->request); $this->request= array();
 		$this->request['isAjax']= isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) 
@@ -134,8 +132,8 @@ class ma_sys_session extends ma_object {
 		$this->request['action']= substr($_SERVER['SCRIPT_NAME']
 				, strrpos( $_SERVER['SCRIPT_NAME'], '/' ) + 1
 				, strrpos( $_SERVER['SCRIPT_NAME'], '.' ) - strlen( $_SERVER['SCRIPT_NAME'] ) );
-		if ($targetEnd= strpos($_SERVER['QUERY_STRING'], '&') !== false ){
-			$this->request['target']= urldecode( substr( $_SERVER['QUERY_STRING'], 0, $targetEnd ); 
+		if (($targetEnd= strpos($_SERVER['QUERY_STRING'], '&')) !== false ){
+			$this->request['target']= urldecode( substr( $_SERVER['QUERY_STRING'], 0, $targetEnd ));
 		} else {
 			$this->request['target']= urldecode( $_SERVER['QUERY_STRING'] ); 
 		}
@@ -146,30 +144,24 @@ class ma_sys_session extends ma_object {
 	
 	private function startDefaultApplication(){
 		//	TODO Access to user data an create and initialize his default application.
-		$this->checkPoint("Begin __CLASS__ :: __METHOD__");
 		
-		return new mau_application();
+		return new mau_application($this->environment);
 		
 	}
 	
 	private function executeRequest(){
 		
-/*		echo "<p>New request for session $this->sessionId...</p>";
-		echo "<p>Request sequence no. {$this->sequence}</p>";
-		echo "<p>Created {$this->createTime} Last Request {$this->lastRequestTime}</p>";
-		echo "<pre>" . print_r($this, true) . "</pre>";
-*/		
-		$this->checkPoint("Begin __CLASS__ :: __METHOD__");
-		
 		switch ($this->request['action']){
 			//TODO: Case the session actions (changeApp, ...)
-			case 'switchApp': case 'openApp': case 'closeApp': case 'logout':
-				echo "Session action {$this->request['action']}";
-				break;
+		case 'switchApp': case 'openApp': case 'closeApp': case 'logout':
+			break;
 			
-			default:
-				$this->apps[$this->currentApp]->OnAction($this->request['action'], $this->request['target'], $this->request['options']);
+		default:
+			$response= $this->apps[$this->currentApp]->OnAction($this->request['action'], $this->request['target'], $this->request['options']);
 		}
+
+		if ( isset( $response ) && method_exists ( $response, 'OnPaint' ) ) $response->OnPaint($this->environment); //TODO Look for some request properties, maybe they can be usefull.
+		else echo "No response to action '{$this->request['action']}'";// TODO Do a page refresh. 
 		
 	}
 	
