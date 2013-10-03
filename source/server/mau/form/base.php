@@ -1,6 +1,8 @@
 <?php
 class mau_form_base extends ma_frm_form{
 	
+	public $responseType= 'auto';
+	
 	public $html;
 	public $className= 'ma-wdForm';
 	
@@ -9,7 +11,7 @@ class mau_form_base extends ma_frm_form{
 	
 	public function encode() { return json_encode($this); }
 	
-	public function OnAction($action, $target, $options, &$response){
+	public function OnAction($action, $target, $options){
 		
 		switch ($action){
 			case 'openForm':  //do not execute. This is an application action.
@@ -37,15 +39,15 @@ class mau_form_base extends ma_frm_form{
 		return $this;
 	}
 	
-	public function OnPaint($environment){
-		echo $this->encode();
-		return;
+	public function OnPaint($config){
 		
-		if ($environment['isAjax']) echo $this->encode();
-		else {
-			$page= new ma_html_page();
-			$page.initalize($template);
-			$page.paint($this->encode());
+		if ($config['isAjax']) {
+			echo $this->encode(); //WHAT HAPPEND WITH THE OPTIONAL SCRIPT.
+			
+		} else {
+			$page= new mau_form_html($config);
+			$page->paint($this);
+			
 		}
 	}
 	

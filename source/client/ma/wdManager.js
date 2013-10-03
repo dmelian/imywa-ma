@@ -30,7 +30,7 @@ var wdManager= {
 		var formContent={};
 		if (!actions) actions={};
 		actions.action= 'openForm';
-		$.ajax({ url: "execAction.php?" + form, type:"POST", dataType: "json", async: false
+		$.ajax({ url: "openForm.php?" + form, type:"POST", dataType: "json", async: false
 			, data: actions
 			, success: function(result, status, xhr){ formContent= result;	}
 			, error: function(xhr, status, err){ alert("...Ajax error..."); }
@@ -42,6 +42,11 @@ var wdManager= {
 		if (this._currentForm) this._currentForm.destroy();
 		
 		// 3 . SWITCH THE OLDER HTML CONTENT WITH THE CONTENT OBTAINED ON STEP 1
+		this.initForm(formContent);
+	},
+	
+	initForm: function(formContent){
+		
 		if (!formContent.html) $("#maForm").text="";
 		else $("#maForm").html(formContent.html);
 		
@@ -50,6 +55,7 @@ var wdManager= {
 		this._currentForm= $("#maForm")[className.split("-")[1]]({widgets: formContent.widgets}).data(className);
 		
 		if (!!formContent.log) console.log(formContent.log);
+		
 	},
 	
 	sendAction: function(action, args){

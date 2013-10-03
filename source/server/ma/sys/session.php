@@ -159,10 +159,22 @@ class ma_sys_session extends ma_object {
 		default:
 			$response= $this->apps[$this->currentApp]->OnAction($this->request['action'], $this->request['target'], $this->request['options']);
 		}
-
-		if ( isset( $response ) && method_exists ( $response, 'OnPaint' ) ) $response->OnPaint($this->environment); //TODO Look for some request properties, maybe they can be usefull.
-		else echo "No response to action '{$this->request['action']}'";// TODO Do a page refresh. 
 		
+		$config= array_merge($this->environment, $this->request);
+		switch ($response->responseType){ //TODO Think on a combination responseType and environment ??
+		case 'auto':
+			$response->OnPaint($config);
+			break;
+		
+		case 'html':
+			$media= new ma_html_page($config);
+			$media->paint($response);
+			break;
+			
+		default:
+			//TODO Error reporting responseType undefined.
+		}
+
 	}
 	
 
