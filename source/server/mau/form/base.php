@@ -14,15 +14,9 @@ class mau_form_base extends ma_frm_form{
 	public function OnAction($action, $target, $options){
 		
 		switch ($action){
-			case 'openForm':  //do not execute. This is an application action.
-				global $_MANAGER;
-				echo "<p>Este es el caballo que viene de Bonanza</p>";
-				echo "<pre>".print_r($_MANAGER, true)."</pre>";
-				echo "<pre>".$this->encode()."</pre>";
-				break;
 				
 			case 'close': //The aplicacion has an closeForm action. And the session a logout action.
-				echo json_encode(array('command'=>'openLocation', 'location'=>'http://www.google.com'));
+				return new mau_form_ajaxResponse( array('command'=>'openLocation', 'location'=>'http://www.google.com') );
 				break;
 				
 			case 'validateField': // Yes it is.

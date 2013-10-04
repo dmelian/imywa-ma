@@ -132,13 +132,26 @@ class ma_sys_session extends ma_object {
 		$this->request['action']= substr($_SERVER['SCRIPT_NAME']
 				, strrpos( $_SERVER['SCRIPT_NAME'], '/' ) + 1
 				, strrpos( $_SERVER['SCRIPT_NAME'], '.' ) - strlen( $_SERVER['SCRIPT_NAME'] ) );
-		if (($targetEnd= strpos($_SERVER['QUERY_STRING'], '&')) !== false ){
-			$this->request['target']= urldecode( substr( $_SERVER['QUERY_STRING'], 0, $targetEnd ));
-		} else {
-			$this->request['target']= urldecode( $_SERVER['QUERY_STRING'] ); 
-		}
 		$this->request['options']= array_merge($_GET, $_POST);
-		if ($this->request['target']) unset($this->request['options'][$this->request['target']]);
+		
+		if ( ($this->request['action'] == 'index') && isset( $this->request['options']['action'] ) ){
+			
+			$this->request['action']= $this->request['options']['action']; 
+			unset( $this->request['options']['action'] );
+			if ( isset($this->request['options']['target']) ){
+				$this->request['target']= $this->request['options']['target']; 
+				unset( $this->request['options']['target'] );
+			} else $this->request['target']= '';
+			
+		} else {
+			
+			if (($targetEnd= strpos($_SERVER['QUERY_STRING'], '&')) !== false ){
+				$this->request['target']= urldecode( substr( $_SERVER['QUERY_STRING'], 0, $targetEnd ));
+			} else {
+				$this->request['target']= urldecode( $_SERVER['QUERY_STRING'] ); 
+			}
+			if ($this->request['target']) unset($this->request['options'][$this->request['target']]);
+		}
 		
 	}
 	
@@ -159,6 +172,8 @@ class ma_sys_session extends ma_object {
 		default:
 			$response= $this->apps[$this->currentApp]->OnAction($this->request['action'], $this->request['target'], $this->request['options']);
 		}
+		
+		if ( !isset($response) ) die("<p>There isn't any response to this request</p><pre>" . print_r($this->request, true) . '</pre>' );
 		
 		$config= array_merge($this->environment, $this->request);
 		switch ($response->responseType){ //TODO Think on a combination responseType and environment ??

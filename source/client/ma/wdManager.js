@@ -62,10 +62,13 @@ var wdManager= {
 		var actionResponse={command: "close"};
 		var actions=args;
 		actions.action= action;
-		$.ajax({ url: "execAction.php?" + action, type:"POST", dataType: "json", async: false
+		$.ajax({ url: "index.php?" + action, type:"POST", dataType: "json", async: false
 			, data: actions
 			, success: function(result, status, xhr){ actionResponse= result;	}
-			, error: function(xhr, status, err){ alert("...Ajax error..."); }
+			, error: function(xhr, status, err){ 
+				alert("...Ajax error...");
+				console.log(xhr);
+			}
 		});
 	
 		// TODO: unsuccessfull request. 

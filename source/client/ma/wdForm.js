@@ -50,7 +50,7 @@ var wdForm= {
 		//TODO: Where is the record?, and the field information?
 		var actions={};
 		actions.action= 'validateField';
-		$.ajax({ url: "execAction.php?" + form, type:"POST", dataType: "json", async: false
+		$.ajax({ url: "index.php?" + form, type:"POST", dataType: "json", async: false
 			, data: actions
 			, success: function(result, status, xhr){ formContent= result;	}
 			, error: function(xhr, status, err){ alert("...Ajax error..."); }
