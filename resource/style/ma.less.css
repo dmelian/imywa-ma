@@ -11,6 +11,8 @@
 
 @maBodyBackColor: whiteSmoke;
 
+@maDatasetBackColor: orange;
+
 
 /* mixins 
 ******************************/
@@ -53,6 +55,13 @@ body {
 	position: absolute;
 	left: 0px; width: 100%;
 	bottom: 0px; height: @maFooterHeight;
+}
+
+
+.maDataset {
+	min-width: 100px;
+	min-height: 15px;
+	background-color: @maDatasetBackColor;
 }
 
 .maTextBox {

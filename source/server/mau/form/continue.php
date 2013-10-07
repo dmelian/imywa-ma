@@ -17,13 +17,7 @@ class mau_form_continue extends mau_form_base{
 		$this->log.= 'GET: ' . print_r($_GET, true);
 		$this->log.= 'SERVER: ' . print_r($_SERVER, true);
 		
-		
-		
-		
-		
-		
-		
-		
+
 	}
 	
 	

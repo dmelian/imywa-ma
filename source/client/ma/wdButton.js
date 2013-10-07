@@ -1,5 +1,5 @@
 
-var wdButton= {
+var wdButton= { // extends ui-button
 	
 	options:{
 		action: {}
