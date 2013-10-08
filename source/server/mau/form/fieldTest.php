@@ -16,6 +16,15 @@ class mau_form_fieldTest extends mau_form_base{
 		$this->html.= '</div>'; //myDataset
 	
 	}
+
+	
+	public function OnAction($action, $target, $options){
+		switch($action){
+			case 'getDataDef':
+				return ¿? algo que se autoimprima sólo si es ajax? y sino que se vaya al carajo?
+			default:
+		}
+	}
 	
 	
 }

@@ -10,7 +10,7 @@ var wdDataset = {
 		this.element.addClass( "maDataset" );
 
 		var actions={};
-		actions.action= 'getDataDefs';
+		actions.action= 'getDataDef';
 		$.ajax({ url: "index.php?", type:"POST", dataType: "json", async: false
 			, data: actions
 			, success: function(result, status, xhr){ 
