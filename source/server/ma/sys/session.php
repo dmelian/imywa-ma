@@ -164,31 +164,24 @@ class ma_sys_session extends ma_object {
 	
 	private function executeRequest(){
 		
+		$config= array_merge($this->environment, $this->request);
+		$response= new ma_sys_response($config);
+
+		// Action execution
 		switch ($this->request['action']){
 			//TODO: Case the session actions (changeApp, ...)
 		case 'switchApp': case 'openApp': case 'closeApp': case 'logout':
 			break;
 			
 		default:
-			$response= $this->apps[$this->currentApp]->OnAction($this->request['action'], $this->request['target'], $this->request['options']);
+			$this->apps[$this->currentApp]->OnAction($this->request['action'], $this->request['target'], $this->request['options'], $response);
 		}
 		
-		if ( !isset($response) ) die("<p>There isn't any response to this request</p><pre>" . print_r($this->request, true) . '</pre>' );
-		
-		$config= array_merge($this->environment, $this->request);
-		switch ($response->responseType){ //TODO Think on a combination responseType and environment ??
-		case 'auto':
-			$response->OnPaint($config);
-			break;
-		
-		case 'html':
-			$media= new ma_html_page($config);
-			$media->paint($response);
-			break;
-			
-		default:
-			//TODO Error reporting responseType undefined.
-		}
+		// Paint the result.
+		//$media= new ma_jqui_media(); //TODO: Select diferent media types.
+		$media= '';
+		if ( $this->request['isAjax'] ) $response->paint($media);
+		else $this->paint($media);
 
 	}
 	

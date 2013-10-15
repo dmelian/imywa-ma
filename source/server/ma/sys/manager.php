@@ -56,7 +56,7 @@ class ma_sys_manager{
 		
 		$fileName= strtr( $className ,'_' ,'/' ) . '.php';
 		require_once( "{$_MANAGER->environment['usrDir']}/source/$fileName" );
-		// Warning: On require_once only a string not any strings functions. 
+		// Warning: On require_once only a string not a function. 
 	}
 	
 
