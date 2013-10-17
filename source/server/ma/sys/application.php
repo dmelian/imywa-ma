@@ -2,6 +2,8 @@
 
 class ma_sys_application extends ma_object{
 	
+	public $mediaType;
+	
 	private $appDir;
 	private $breadCrumb= array();
 	private $stackTop= 0;
@@ -14,13 +16,12 @@ class ma_sys_application extends ma_object{
 		if ($success) $success= chmod($this->appDir."/forms", 0777);
 		//TODO IF not success then log error and die. 
 		
-		//TODO Start the current form.
+		//TODO Load the Start form. ??
 		
 	}
 	
-	
-	public function OnAction($action, $target, $options){
-		
+	public function OnAction($action, $target, $options, &$response){
+		return;
 		switch ($action){
 		case 'openForm':
 			
@@ -58,6 +59,9 @@ class ma_sys_application extends ma_object{
 		}
 	}
 	
+	public function OnPaint($document){
+		$document->addElement('Esta es mi aplicación');
+	}
 	
 // FORM STACK
 	

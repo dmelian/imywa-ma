@@ -9,11 +9,11 @@
 <?php for( $i= 0; $i < count($this->style); $i++ ) {?>
 	<link rel="stylesheet" href="<?php echo $this->style[$i]; ?>" />
 <?php };?>
-	
+
 <script>(function($){ 
 	$(function(){
-	
-<?php echo $this->script[0]; ?>
+
+<?php for ( $i= 0; $i < count($this->script); $i++ ) echo $this->script[0] . "\n"; ?>
 
 	});
 }(jQuery));</script>

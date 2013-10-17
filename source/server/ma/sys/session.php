@@ -81,9 +81,9 @@ class ma_sys_session extends ma_object {
 		if ($this->authenticated) {
 			$this->extractRequestProperties();
 			if (!$this->currentApp){
-				$startApp= $this->startDefaultApplication();
+				$startApp= $this->openApplication();
 				$this->apps[$startApp->appName]= $startApp;
-				$this->currentApp=$startApp->appName; 
+				$this->currentApp= $startApp->appName; 
 			}
 			
 			$this->sequence++;
@@ -132,40 +132,41 @@ class ma_sys_session extends ma_object {
 		$this->request['action']= substr($_SERVER['SCRIPT_NAME']
 				, strrpos( $_SERVER['SCRIPT_NAME'], '/' ) + 1
 				, strrpos( $_SERVER['SCRIPT_NAME'], '.' ) - strlen( $_SERVER['SCRIPT_NAME'] ) );
+		if ( $this->request['action'] == 'index' ) $this->request['action'] = 'refresh';
+		if ( ($targetEnd= strpos($_SERVER['QUERY_STRING'], '&') ) !== false ){
+			$this->request['target']= urldecode( substr( $_SERVER['QUERY_STRING'], 0, $targetEnd ));
+		} else {
+			$this->request['target']= urldecode( $_SERVER['QUERY_STRING'] ); 
+		}
 		$this->request['options']= array_merge($_GET, $_POST);
 		
-		if ( ($this->request['action'] == 'index') && isset( $this->request['options']['action'] ) ){
-			
-			$this->request['action']= $this->request['options']['action']; 
-			unset( $this->request['options']['action'] );
-			if ( isset($this->request['options']['target']) ){
-				$this->request['target']= $this->request['options']['target']; 
-				unset( $this->request['options']['target'] );
-			} else $this->request['target']= '';
-			
-		} else {
-			
-			if (($targetEnd= strpos($_SERVER['QUERY_STRING'], '&')) !== false ){
-				$this->request['target']= urldecode( substr( $_SERVER['QUERY_STRING'], 0, $targetEnd ));
-			} else {
-				$this->request['target']= urldecode( $_SERVER['QUERY_STRING'] ); 
+		foreach( $this->request['options'] as $option => $value ){
+			if ( substr( $option, 0, 1 ) == '_' ) {
+				$option= substr( $option, 1 );
+				$this->request[$option]= $this->request['options']["_$option"]; 
+				unset( $this->request['options']["_$option"] );
 			}
-			if ($this->request['target']) unset($this->request['options'][$this->request['target']]);
 		}
 		
 	}
 	
-	private function startDefaultApplication(){
+	private function openApplication($app='default'){
 		//	TODO Access to user data an create and initialize his default application.
 		
-		return new mau_application($this->environment);
+		$app= new mau_application($this->environment);
+		
+		//$app->OnOpen($uid); //TODO must have an uid.
+		
+		return $app;
+		
 		
 	}
 	
 	private function executeRequest(){
 		
 		$config= array_merge($this->environment, $this->request);
-		$response= new ma_sys_response($config);
+		$responseClass= $this->apps[$this->currentApp]->mediaType . "_response";
+		$response= new $responseClass($config);
 
 		// Action execution
 		switch ($this->request['action']){
@@ -177,12 +178,23 @@ class ma_sys_session extends ma_object {
 			$this->apps[$this->currentApp]->OnAction($this->request['action'], $this->request['target'], $this->request['options'], $response);
 		}
 		
-		// Paint the result.
-		//$media= new ma_jqui_media(); //TODO: Select diferent media types.
-		$media= '';
-		if ( $this->request['isAjax'] ) $response->paint($media);
-		else $this->paint($media);
+		// Paint the result in the document.
+		if ( $this->request['isAjax'] ) {
+			$response->paint();
+			
+		} else {
+			$documentClass= $this->apps[$this->currentApp]->mediaType . "_document";
+			$document= new $documentClass($config);
+			$this->paint($document);
+			$document->paint();
+		}
 
+	}
+	
+	private function paint($document){
+		
+		$this->apps[$this->currentApp]->OnPaint($document);
+		
 	}
 	
 

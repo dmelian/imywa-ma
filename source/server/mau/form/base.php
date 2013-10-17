@@ -1,17 +1,11 @@
 <?php
-class mau_form_base extends ma_frm_form{
+class mau_form_base {
 	
-	public $responseType= 'auto';
-	
-	public $html;
 	public $className= 'ma-wdForm';
-	
+	public $html;
 	public $widgets= array(); // id => array(type, options);
-	public $log;
 	
-	public function encode() { return json_encode($this); }
-	
-	public function OnAction($action, $target, $options){
+	public function OnAction($action, $target, $options, &$response){
 		
 		switch ($action){
 				
@@ -23,13 +17,16 @@ class mau_form_base extends ma_frm_form{
 				//TODO: Call to the mysql storeProcedure if needed, and return the validated field and record.
 				break;
 				
+			case 'load':
+				$response->html= $this->html;
+				$response->widgets= $this->widgets
+				
 		}
 		
-		//TODO openForm and close are application actions. validateField is form or record action. Where are the ids?.
 		
 	}
 	
-	public function OnOpen($uid, $options){
+	public function OnOpen($uid, $options, &$response){ and restore.. aunque sea ajax no se trata se una respuesta, hay que cargarlo de nuevo.
 		return $this;
 	}
 	
