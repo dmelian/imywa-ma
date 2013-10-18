@@ -34,7 +34,7 @@ var wdManager= {
 		
 	},
 	
-	sendAction: function(action, target, source, options){
+	sendAction: function(action, source, target, options){
 		
 		var data= typeof options == "object" ? options : {};
 		data._action= action;

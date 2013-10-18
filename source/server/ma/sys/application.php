@@ -2,10 +2,12 @@
 
 class ma_sys_application extends ma_object{
 	
-	public $mediaType;
+	public $mediaType, $appName, $startForm;
+	
+	protected $currentForm;
+	protected $breadCrumb= array();
 	
 	private $appDir;
-	private $breadCrumb= array();
 	private $stackTop= 0;
 	
 	public function __construct($environment){
@@ -20,25 +22,29 @@ class ma_sys_application extends ma_object{
 		
 	}
 	
-	public function OnAction($action, $target, $options, &$response){
-		return;
+	public function initialize(){
+		
+		$formClass= $this->startForm;
+		$form= new $formClass();
+		if ( method_exists($form, 'initialize') ) $form->initialize();
+		$this->formPush($form);
+		
+	}
+	
+	public function executeAction($action, $source, $target, $options, $response){
+		
+		//TODO: Check the source.
+		//TODO: Call OnAction($action, $options, $response);
+		
 		switch ($action){
 		case 'openForm':
 			
-			if (! $this->formStackIsEmpty() ) {
-				$form= $this->formPop();
-				if (method_exists($form, 'OnSleep')) $form->OnSleep();
-				$this->formPush($form);
-			}
 			$formClass= trim(strtr( $target, '/', '_' ),"_ \t\n");
-			
 			if ( class_exists( $formClass ) ) {
-				$form= new $formClass(); //TODO Pass the options as __construct args?
-				$uid='norl';
-				$response= $form->OnOpen($uid, $options);
-				//$response= $form->OnAction( $action, $target, $options );
-				$this->formPush($form);
-				return $response;
+				$this->currentForm= new $formClass();
+				$this->currentForm->initialize( $options );
+				$form->executeAction($source, 'refresh', $target, $options, $response);
+				$this->formPush($this->currentForm);
 				
 			} else {
 				//TODO log error: not found form.
@@ -51,21 +57,34 @@ class ma_sys_application extends ma_object{
 			break;
 			
 		default:
-			$form= $this->formPop();
-			$response= $form->OnAction($action, $target, $options);
-			$this->formPush($form);
+			$this->currentForm= $this->formPop();
+			$response= $this->currentForm->executeAction($action, $source, $target, $options, $response);
+			$this->formPush($this->currentForm);
 			return $response;
 			
 		}
 	}
 	
+	public function paint($document){
+		if ( method_exists($this, 'OnPaint') ) $this->OnPaint($document);
+		if ( isset($this->currentForm) ) $this->currentForm->paint($document);
+	}
+
+	
 	public function OnPaint($document){
-		$document->addElement('Esta es mi aplicación');
+		//Event to modify on a herited app.
+		$document->addElement("Aplicación: {$this->appName}. Default Paint.");
+	}
+	
+
+	
+	public function getBreadCrumbCaptions(){
+		return $this->breadCrumb;
 	}
 	
 // FORM STACK
 	
-	private function formPush(&$form){
+	private function formPush($form){
 		$caption= method_exists($form, "getBreadCrumbCaption")? $form->getBreadCrumbCaption() : '?';
 		array_push($this->breadCrumb, $caption);
 		$fname = "{$this->appDir}/forms/F" . str_pad(++$this->stackTop, 4, '0', STR_PAD_LEFT);
@@ -115,7 +134,7 @@ class ma_sys_application extends ma_object{
 	}
 	
 	
-	private function updateTopForm(&$form){
+	private function updateTopForm($form){
 		$fname = "{$this->appDir}/forms/F" . str_pad(++$this->stackTop, 4, '0', STR_PAD_LEFT);
 		$sessionFile= new ma_lib_syncFile($fname);
 		if ( ! $sessionFile->setContent( serialize( $form ) ) ) {
@@ -125,11 +144,6 @@ class ma_sys_application extends ma_object{
 			if (method_exists($form, "getBreadCrumbCaption")) $this->breadCrumb[ count( $this->breadCrumb ) - 1 ]= $form->getBreadCrumbCaption();
 		}
 		
-	}
-
-	
-	public function getBreadCrumbCaptions(){
-		return $this->breadCrumb;
 	}
 	
 }

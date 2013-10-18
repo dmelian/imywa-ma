@@ -8,7 +8,7 @@ class ma_sys_session extends ma_object {
 	private $createTime, $lastRequestTime;
 	private $request; //Current request data (asoc array)
 	private $user, $password, $authenticated=false;
-	private $apps= array();
+	private $app= array();
 	private $currentApp;
 	
 	public static function create($environment) {
@@ -69,7 +69,7 @@ class ma_sys_session extends ma_object {
 	
 	
 	
-	public function OnNewRequest(){
+	public function newRequest(){
 		
 		$this->lastRequestTime= date('Y-m-d H:i:s');
 		if (!$this->sessionId) {
@@ -81,14 +81,15 @@ class ma_sys_session extends ma_object {
 		if ($this->authenticated) {
 			$this->extractRequestProperties();
 			if (!$this->currentApp){
-				$startApp= $this->openApplication();
-				$this->apps[$startApp->appName]= $startApp;
-				$this->currentApp= $startApp->appName; 
+				$app= $this->openApplication();
+				$this->app[$app->appName]= $app;
+				$this->currentApp= $app->appName; 
 			}
 			
 			$this->sequence++;
 			$this->executeRequest();
 		}
+		//TODO: if ($this->currentApp) $this->app[$this->currentApp]->prepareForSerialize(); // to unset the current form.
 		$this->serialize();
 		
 	}
@@ -140,6 +141,9 @@ class ma_sys_session extends ma_object {
 		}
 		$this->request['options']= array_merge($_GET, $_POST);
 		
+		if ( !isset($this->request['source']) ) $this->request['source']= '';
+		if ( !isset($this->request['target']) ) $this->request['target']= '';
+		
 		foreach( $this->request['options'] as $option => $value ){
 			if ( substr( $option, 0, 1 ) == '_' ) {
 				$option= substr( $option, 1 );
@@ -155,7 +159,7 @@ class ma_sys_session extends ma_object {
 		
 		$app= new mau_application($this->environment);
 		
-		//$app->OnOpen($uid); //TODO must have an uid.
+		$app->initialize(); //TODO must have an uid.
 		
 		return $app;
 		
@@ -165,7 +169,7 @@ class ma_sys_session extends ma_object {
 	private function executeRequest(){
 		
 		$config= array_merge($this->environment, $this->request);
-		$responseClass= $this->apps[$this->currentApp]->mediaType . "_response";
+		$responseClass= $this->app[$this->currentApp]->mediaType . "_response";
 		$response= new $responseClass($config);
 
 		// Action execution
@@ -175,7 +179,13 @@ class ma_sys_session extends ma_object {
 			break;
 			
 		default:
-			$this->apps[$this->currentApp]->OnAction($this->request['action'], $this->request['target'], $this->request['options'], $response);
+			$this->app[$this->currentApp]->executeAction(
+				$this->request['action']
+				, $this->request['source']
+				, $this->request['target']
+				, $this->request['options']
+				, $response
+			);
 		}
 		
 		// Paint the result in the document.
@@ -183,7 +193,7 @@ class ma_sys_session extends ma_object {
 			$response->paint();
 			
 		} else {
-			$documentClass= $this->apps[$this->currentApp]->mediaType . "_document";
+			$documentClass= $this->app[$this->currentApp]->mediaType . "_document";
 			$document= new $documentClass($config);
 			$this->paint($document);
 			$document->paint();
@@ -193,7 +203,7 @@ class ma_sys_session extends ma_object {
 	
 	private function paint($document){
 		
-		$this->apps[$this->currentApp]->OnPaint($document);
+		$this->app[$this->currentApp]->paint($document);
 		
 	}
 	

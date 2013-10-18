@@ -1,21 +1,19 @@
 <?php
-class mau_form_start extends mau_form_base{
+class mau_form_start extends ma_ui_form{
 
-	public function __construct(){
-		parent::__construct();
+	
+	
+	protected function OnPaint($document){
 		
-		$this->widgets['continue']= array('className'=>'ma-wdButton'
-			, 'options'=>array('action'=>array('action'=>'openForm','form'=>'mau/form/continue')));
-		$this->widgets['test']= array('className'=>'ma-wdButton'
-			, 'options'=>array('action'=>array('action'=>'openForm','form'=>'mau/form/fieldTest')));
-			
-		$this->html= '<h1>Formulario de inicio</h1>';
-		$this->html.= "<p>Este es el formulario inicial de arranque.</p>";
-		$this->html.= "<p>Normalmente será un login con contraseña.</p>";
-		$this->html.= '<button id="continue">Continuar</button><br/>';
-		$this->html.= '<button id="test">Test</button><br/>';
+		$document->addHtml('<h1>Formulario de inicio</h1>');
+		$document->addHtml('<p>Este es el formulario inicial de arranque.</p>');
+		$document->addHtml('<p>Normalmente será un login con contraseña.</p>');
+		$document->addHtml('<button id="continue">Continuar</button><br/>');
+		$document->addHtml('<button id="test">Test</button><br/>');
+		
+		$document->addWidget('continue', 'ma-wdButton', array('action'=>array('action'=>'openForm','form'=>'mau/form/continue')));
+		$document->addWidget('test', 'ma-wdButton', array('action'=>array('action'=>'openForm','form'=>'mau/form/fieldTest')));
 		
 	}
-	
 	
 }

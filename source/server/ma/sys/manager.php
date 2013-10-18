@@ -67,7 +67,7 @@ class ma_sys_manager{
 	
 	public function newRequest(){
 		$session= ma_sys_session::create($this->environment);
-		$session->OnNewRequest();
+		$session->newRequest();
 		
 	}
 }
