@@ -43,7 +43,7 @@ class ma_sys_application extends ma_object{
 			if ( class_exists( $formClass ) ) {
 				$this->currentForm= new $formClass();
 				$this->currentForm->initialize( $options );
-				$form->executeAction($source, 'refresh', $target, $options, $response);
+				$this->currentForm->executeAction( 'refresh', $source, $target, $options, $response);
 				$this->formPush($this->currentForm);
 				
 			} else {

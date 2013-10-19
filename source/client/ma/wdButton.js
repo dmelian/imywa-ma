@@ -21,7 +21,7 @@ var wdButton= { // extends ui-button
 	
 	action: function(event){  
 	//TODO: Desde aquí hay que lanzar un open formulario, que cierra el formulario actual del que este botón es parte.
-		$.ma.manager.sendAction(this.options.action);
+		$.ma.manager.sendAction(this.options.action.action, '¿source?', this.options.action.target);
 	}
 	
 };

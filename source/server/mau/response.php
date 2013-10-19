@@ -1,17 +1,12 @@
 <?php
-class mau_response {
-	
-	public $html;
-	public $className= 'ma-wdForm';
-	
-	public $widgets= array(); // id => array(type, options);
+class mau_response extends mau_media {
 
 	public function __construct($config){
 		
 	}
 	
 	public function paint(){
-		echo json_encode($this);
+		echo $this->formContent();
 	}
 	
 }

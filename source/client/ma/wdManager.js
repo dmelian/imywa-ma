@@ -44,7 +44,7 @@ var wdManager= {
 		$.ajax({ url: "index.php", type:"POST", dataType: "json", async: true
 			, data: data
 			, context: this
-			, success: actionResponse
+			, success: this.actionResponse
 			, error: function(xhr, status, err){ 
 				alert("...Ajax error...");
 				console.log(xhr);

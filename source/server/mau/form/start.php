@@ -11,8 +11,8 @@ class mau_form_start extends ma_ui_form{
 		$document->addHtml('<button id="continue">Continuar</button><br/>');
 		$document->addHtml('<button id="test">Test</button><br/>');
 		
-		$document->addWidget('continue', 'ma-wdButton', array('action'=>array('action'=>'openForm','form'=>'mau/form/continue')));
-		$document->addWidget('test', 'ma-wdButton', array('action'=>array('action'=>'openForm','form'=>'mau/form/fieldTest')));
+		$document->addWidget('continue', 'ma-wdButton', array('action'=>array('action'=>'openForm','target'=>'mau/form/continue')));
+		$document->addWidget('test', 'ma-wdButton', array('action'=>array('action'=>'openForm','target'=>'mau/form/fieldTest')));
 		
 	}
 	
