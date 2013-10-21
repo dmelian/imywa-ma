@@ -7,6 +7,7 @@ class ma_sys_manager{
 	
 	public $environment;
 	public $texts;
+	public $currentSession;
 	
 
 	public function __construct(){
@@ -66,8 +67,8 @@ class ma_sys_manager{
 	
 	
 	public function newRequest(){
-		$session= ma_sys_session::create($this->environment);
-		$session->newRequest();
+		$this->currentSession= ma_sys_session::create($this->environment);
+		$this->currentSession->newRequest();
 		
 	}
 }

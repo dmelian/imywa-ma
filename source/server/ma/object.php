@@ -70,5 +70,12 @@ class ma_object{
 	
 	//TODO debug better on session dir.
 	protected function debug($var, $comment='') { $this->log($var, 'debug', $comment); }
+	
+// UIDS
+
+	protected function getUId(){
+		global $_MANAGER;
+		return $_MANAGER->currentSession->getUId();
+	}
 		
 }

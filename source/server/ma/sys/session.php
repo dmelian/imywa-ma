@@ -10,6 +10,8 @@ class ma_sys_session extends ma_object {
 	private $user, $password, $authenticated=false;
 	private $app= array();
 	private $currentApp;
+	private $lastUId= 0;
+	private $lastReservedUId= 0;
 	
 	public static function create($environment) {
 		
@@ -23,8 +25,6 @@ class ma_sys_session extends ma_object {
 
 
 	}
-	
-	
 	
 	public function __construct($environment){
 		parent::__construct();
@@ -42,8 +42,11 @@ class ma_sys_session extends ma_object {
 			if (!file_exists($this->sessionDir)){
 				$success= mkdir($this->sessionDir); 
 				if ($success) $success= chmod($this->sessionDir, 0777);
+				if ($success) $success= put_file_content($this->sessionDir.'/lid', '0');
+				if ($success) $success= chmod($this->sessionDir.'/lid', 0666);
 				if ($success) $success= mkdir($this->sessionDir."/temp");
 				if ($success) $success= chmod($this->sessionDir."/temp", 0777);
+				
 				
 				if (!$success) $this->sessionId= '';
 			} else  $this->sessionId= '';
@@ -67,7 +70,39 @@ class ma_sys_session extends ma_object {
 		}
 	}
 	
-	
+	private function incUId($uid){
+		
+		//$chrs= '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+		$iUId= ''; $inc= 1;
+		for ($i= strlen($uid) -1; $i >= 0; $i--){
+			$c= $substr($uid, $i, 1);
+			if ($inc) {
+				$c= strtr( chr( ord($c) + $inc ), ':[{', 'Aa0');
+				$inc= $c=='0' ? 1 : 0;
+			}
+			$iUId= $c . $iUId;
+		}
+		
+		return $iUId;
+		
+	}
+
+	public function newUId(){
+		if ($this->lastUId){
+			$this->lastUId= $this->incUId($this->lastUId);
+			if ( $this->lastUId != $this->lastReservedUId ) return $this->lastUId;
+		}
+		
+		$uidFile= new ma_lib_syncFile( "{$this->sessionDir}/lid" );
+		if ( $uid= $uidFile->getContent( true ) ) {
+			$this->incUId($uid); $uidFile->setContent( $uid );
+			$this->lastUId= $uid . '0';
+			$this->incUId($uid); $this->lastReservedUID= $uid . '0';
+			
+		} else ; //TODO: Log cannot get new uids.
+		
+		return $this->lastUId;
+	}
 	
 	public function newRequest(){
 		

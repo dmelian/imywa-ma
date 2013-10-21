@@ -4,25 +4,40 @@ class ma_lib_syncFile {
 	public $errorno;
 	public $content;
 	public $filename;
+	
+	private $file= 0;
+	private $locked= false;
 
 	public function __construct($filename){
 		$this->filename= $filename;
 	}
 
-	public function getContent(){
+	
+	public function getContent($lock= false){
 
+		if ($this->locked) {
+			flock($this->file,LOCK_UN); 
+			fclose($this->file);
+			$this->locked= false;
+		}
+		
 		if (file_exists($this->filename)) {
-			if ($file= fopen($this->filename,'r')){
+			if ($this->file= fopen($this->filename,'r')){
 
 				$count = 0;
-				while ((!$lock = flock($file,LOCK_EX)) && $count < 10){
+				while ((!$locked = flock($this->file,LOCK_EX)) && $count < 10){
 					usleep(50000); $count++;
 				}
 
-				if ($lock) {
+				if ($locked) {
 
-					fseek($file,0); $this->content= fread($file, filesize($this->filename));
-					flock($file,LOCK_UN); fclose($file);
+					fseek($this->file,0); $this->content= fread($this->file, filesize($this->filename));
+					if ($lock) {
+						$this->locked= true;
+					} else {
+						flock($this->file,LOCK_UN); fclose($this->file);
+						$this->locked= false; 
+					}
 					return true;
 						
 				} else $this->errorno = "LOCKFILEERROR";
@@ -36,22 +51,28 @@ class ma_lib_syncFile {
 	function setContent($content){
 
 		$newfile= !file_exists($this->filename);
-		if ($file= fopen($this->filename,'c+')){
-
-			$count = 0;
-			while ((!$lock = flock($file,LOCK_EX)) && $count < 10){
-				usleep(50000); $count++;
+		$locked= $this->locked;
+		if (!$this->locked) {
+			if ($this->file= fopen($this->filename,'c+')){
+	
+				$count = 0;
+				while ((!$locked = flock($this->file,LOCK_EX)) && $count < 10){
+					usleep(50000); $count++;
+				}
+			} else {
+				$this->errorno = "CREATEFILEERROR";
+				return false;
 			}
-				
-			if ($lock) {
+		}
 					
-				fseek($file,0); fwrite($file, $content);
-				flock($file,LOCK_UN); fclose($file);
-				if ($newfile) chmod($this->filename, 0666);
-				return true;
-
-			} else $this->errorno = "LOCKFILEERROR";
-		} else $this->errorno = "CREATEFILEERROR";
+		if ($locked) {
+			fseek($this->file,0); fwrite($this->file, $content);
+			flock($this->file,LOCK_UN); fclose($this->file);
+			if ($newfile) chmod($this->filename, 0666);
+			$this->locked= false;
+			return true;
+	
+		} else $this->errorno = "LOCKFILEERROR";
 
 		return false;
 	}
