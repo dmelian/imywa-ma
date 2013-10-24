@@ -42,7 +42,7 @@ class ma_sys_session extends ma_object {
 			if (!file_exists($this->sessionDir)){
 				$success= mkdir($this->sessionDir); 
 				if ($success) $success= chmod($this->sessionDir, 0777);
-				if ($success) $success= put_file_content($this->sessionDir.'/lid', '0');
+				if ($success) $success= file_put_contents($this->sessionDir.'/lid', '0');
 				if ($success) $success= chmod($this->sessionDir.'/lid', 0666);
 				if ($success) $success= mkdir($this->sessionDir."/temp");
 				if ($success) $success= chmod($this->sessionDir."/temp", 0777);
@@ -75,7 +75,7 @@ class ma_sys_session extends ma_object {
 		//$chrs= '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 		$iUId= ''; $inc= 1;
 		for ($i= strlen($uid) -1; $i >= 0; $i--){
-			$c= $substr($uid, $i, 1);
+			$c= substr($uid, $i, 1);
 			if ($inc) {
 				$c= strtr( chr( ord($c) + $inc ), ':[{', 'Aa0');
 				$inc= $c=='0' ? 1 : 0;
@@ -207,6 +207,8 @@ class ma_sys_session extends ma_object {
 		$responseClass= $this->app[$this->currentApp]->mediaType . "_response";
 		$response= new $responseClass($config);
 
+		//$this->debug($this, 'Session. Execute Request');
+		
 		// Action execution
 		switch ($this->request['action']){
 			//TODO: Case the session actions (changeApp, ...)

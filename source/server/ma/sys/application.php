@@ -42,8 +42,10 @@ class ma_sys_application extends ma_object{
 			$formClass= trim(strtr( $target, '/', '_' ),"_ \t\n");
 			if ( class_exists( $formClass ) ) {
 				$this->currentForm= new $formClass();
-				$this->currentForm->initialize( $options );
-				$this->currentForm->executeAction( 'refresh', $source, $target, $options, $response);
+				$this->currentForm->OnOpen($options, $response);
+//				initialize and OnRefresh are reemplaced for OnOpen. Too much simple.
+//				$this->currentForm->initialize( $options );
+//				$this->currentForm->executeAction( 'refresh', $source, $target, $options, $response);
 				$this->formPush($this->currentForm);
 				
 			} else {

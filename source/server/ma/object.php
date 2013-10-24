@@ -59,10 +59,13 @@ class ma_object{
 		if (!file_exists($filename)){ $fp= fopen($filename, 'a+'); chmod($filename, 0666); } 
 		else $fp= fopen($filename, 'a');
 		
-		if (!$comment) $comment= '--';
 		if ( is_array($msg) || is_object($msg) ) {
+			if (!$comment) $comment= '--';
 			$msg= strtr( "$comment\n" . print_r( $msg, TRUE ), array( "\n" => "\n\t" ) );
-		} else $msg= strtr( $msg, array( "\n" => "\n\t" ) );
+		} else {
+			if ($comment) $comment= "[$comment]:";
+			$msg= strtr( $comment.$msg, array( "\n" => "\n\t" ) );
+		}
 		
 		fwrite($fp, "$prefix$msg\n");
 		fclose($fp);
@@ -73,9 +76,9 @@ class ma_object{
 	
 // UIDS
 
-	protected function getUId(){
+	protected function newUId(){
 		global $_MANAGER;
-		return $_MANAGER->currentSession->getUId();
+		return $_MANAGER->currentSession->newUId();
 	}
 		
 }

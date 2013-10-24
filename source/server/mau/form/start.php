@@ -1,9 +1,10 @@
 <?php
 class mau_form_start extends ma_ui_form{
 
+//	public function executeAction($action, $source, $target, $options, $response){
+//	}
 	
-	
-	protected function OnPaint($document){
+	public function OnPaint($document){
 		
 		$document->addHtml('<h1>Formulario de inicio</h1>');
 		$document->addHtml('<p>Este es el formulario inicial de arranque.</p>');

@@ -5,7 +5,12 @@ class ma_ui_form extends ma_ui_container{
 		
 	}
 	
-	public function executeAction($action, $source, $target, $option, $response){
+	public function executeAction($action, $source, $target, $options, $response){
+		$this->debug($action, 'form. executeAction. Action');
+		$this->debug($source, 'Source');
+		$this->debug($target, 'Target');
+		$this->debug($options, 'Options');
+		$this->debug($response, 'Response');
 		
 	}
 	

@@ -1,5 +1,5 @@
 <?php
-interface ma_ui_widget extends ma_object{
+class ma_ui_widget extends ma_object{
 	protected $uid;
 	
 	public function __construct(){
@@ -7,8 +7,12 @@ interface ma_ui_widget extends ma_object{
 		
 	}
 
-	public function OnAction($action, $source, $target, $options, $response);
+	public function OnAction($action, $source, $target, $options, $response){
+		
+	}
 	
-	public function OnPaint($config);
+	public function OnPaint($config){
+		
+	}
 
 }
