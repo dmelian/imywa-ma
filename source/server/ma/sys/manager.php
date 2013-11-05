@@ -55,8 +55,8 @@ class ma_sys_manager{
 	public static function phpClassLoader( $className ){
 		global $_MANAGER;
 		
-		$fileName= strtr( $className ,'_' ,'/' ) . '.php';
-		require_once( "{$_MANAGER->environment['usrDir']}/source/$fileName" );
+		$fileName= "{$_MANAGER->environment['usrDir']}/source/" . strtr( $className ,'_' ,'/' ) . '.php';
+		if ( file_exists( $fileName ) ) require_once( $fileName );
 		// Warning: On require_once only a string not a function. 
 	}
 	

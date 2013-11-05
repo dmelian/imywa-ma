@@ -192,10 +192,9 @@ class ma_sys_session extends ma_object {
 	private function openApplication($app='default'){
 		//	TODO Access to user data an create and initialize his default application.
 		
-		$app= new mau_application($this->environment);
-		
+		$appClassname= $app == 'default' ? $this->environment['defaultApp'] : $app;
+		$app= new $appClassname($this->environment);
 		$app->initialize(); //TODO must have an uid.
-		
 		return $app;
 		
 		
@@ -205,10 +204,9 @@ class ma_sys_session extends ma_object {
 		
 		$config= array_merge($this->environment, $this->request);
 		$responseClass= $this->app[$this->currentApp]->mediaType . "_response";
-		$response= new $responseClass($config);
+		if ( class_exists( $responseClass ) ) $response= new $responseClass($config);
+		else $response= new ma_sys_response($config); //Applications without ajax has not to define the response class.
 
-		//$this->debug($this, 'Session. Execute Request');
-		
 		// Action execution
 		switch ($this->request['action']){
 			//TODO: Case the session actions (changeApp, ...)

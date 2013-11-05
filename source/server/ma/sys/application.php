@@ -73,13 +73,6 @@ class ma_sys_application extends ma_object{
 	}
 
 	
-	public function OnPaint($document){
-		//Event to modify on a herited app.
-		$document->addElement("Aplicación: {$this->appName}. Default Paint.");
-	}
-	
-
-	
 	public function getBreadCrumbCaptions(){
 		return $this->breadCrumb;
 	}

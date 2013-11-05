@@ -3,7 +3,8 @@ module.exports= function(grunt){
 	var configVars= {
 		webDir: "/var/www/ma",
 		usrDir: "/usr/local/ma",
-		debugDir: "../debug"
+		debugDir: "../debug",
+		styleName: "pos",
 	};
 	
 	grunt.initConfig({
@@ -30,8 +31,8 @@ module.exports= function(grunt){
 		},
 
 		less: { 
-			dev: { src: "resource/style/*.less.css", dest: "<%= cfg.webDir %>/style/ma.css" },
-			build: { src: "resource/style/*.less.css", dest: "build/web/style/ma.css" }
+			dev: { src: "resource/style/<%= cfg.styleName %>/*.less.css", dest: "<%= cfg.webDir %>/style/<%= cfg.styleName %>.css" },
+			build: { src: "resource/style/<%= cfg.styleName %>/*.less.css", dest: "build/web/style/<%= cfg.styleName %>.css" }
 		},
 
 		copy: {
