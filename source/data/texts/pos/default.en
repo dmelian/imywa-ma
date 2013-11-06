@@ -1,0 +1,15 @@
+
+[dberror]
+
+# serialNo E00
+E000	The serial no "$_serialNo" is not found.
+
+# pos E01
+E010	The pos "$_pos" is not found.
+
+# workDay E02
+
+# presale E03
+E030	The presale "$_business:$_pos:$_workDay:$_turn:$_presale" is not found.
+E031	The state of the presale "$_business:$_pos:$_workDay:$_turn:$_presale" must be draft or revising, but not "$_state".
+E032	The state of the presale "$_business:$_pos:$_workDay:$_turn:$_presale" must be billed, but not "$_state".
