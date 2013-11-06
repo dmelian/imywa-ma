@@ -2,8 +2,10 @@
 
 class ma_sys_application extends ma_object{
 	
+	/* Application attributes that derived clases must define
 	public $mediaType, $appName, $startForm;
-	
+	public $host, $mainDb
+	*/
 	protected $currentForm;
 	protected $breadCrumb= array();
 	

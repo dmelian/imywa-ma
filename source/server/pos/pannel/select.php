@@ -11,9 +11,9 @@ class pos_pannel_select extends pos_pannel{
 	}
 	
 	public function OnPaintContent( $document ){
-		if ( $this->conn->call('pos', 'getItemButtons') ){
+		//if ( $this->conn->call('pos', 'getItemButtons') ){
 			
-		}
+		//}
 	}
 	
 	

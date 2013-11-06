@@ -11,6 +11,7 @@ class ma_sql_connection{
 	protected $resultIds; //The identifiers of the nonanonymous results
 	protected $host;
 	protected $database;
+	protected $user;
 	
 	public $message;
 	protected $closed= true;
@@ -31,27 +32,19 @@ class ma_sql_connection{
 	 * 
 	 * Cada aplicación tiene un host de donde tira. Ya se habrá diseñado para que no tire de datos comunes con imywa.
 	 */ 
-	public function __construct($default=false){
-		global $_SESSION;
-		global $CONFIG;
+	public function __construct($host, $database, $user, $password){
 		
-		if (isset($_SESSION->currentApp) && !$default){
-			$_SESSION->apps[$_SESSION->currentApp]->getMainDb($this->host, $this->database);
-		} else {
-			$this->host= $CONFIG['DEFAULTHOST'];
-			$this->database= $CONFIG['DEFAULTDATABASE'];
-		}
+		$this->host= $host; $this->database= $database; $this->user= $user;
 		$this->conn= mysqli_init(); 
 		if (!$this->conn){ $this->setMessage('bas_sqlx_error', 'mysqliError'); return; }
-		if (@$this->conn->real_connect($this->host, $_SESSION->user, $_SESSION->password, $this->database)) {
+		if (@$this->conn->real_connect( $host, $user, $password, $database ) ) {
 			$this->conn->autocommit(false);
 			$this->conn->set_charset('utf8');
 			$this->success= true;
 			$this->closed= false;
 			
 		} else $this->setError();
-        
-    }
+	}
 
     protected function setMessage($module, $id, $texts= false){ $this->message= array('module'=>$module, 'id'=>$id, 'texts'=>$texts); }
     
@@ -59,7 +52,7 @@ class ma_sql_connection{
     	switch($this->conn->errno){
 			case 2005: 	$this->setMessage('bas_sqlx_error', 'unknownHost', array('host'=>$this->host)); break; // connect_errno: 2005 - Unknown MySQL server host ...
 			case 1044: 
-			case 1045: 	$this->setMessage('bas_sqlx_error', 'accessDenied', array('user'=>$_SESSION->user)); break; // connect_errno: 1044 y 1045 - Access denied for user ...
+			case 1045: 	$this->setMessage('bas_sqlx_error', 'accessDenied', array('user'=>$this->user)); break; // connect_errno: 1044 y 1045 - Access denied for user ...
 			case 1049: 	$this->setMessage('bas_sqlx_error', 'unknownDatabase', array('database'=>$this->database)); break; // connect_errno: 1049 - User authenticated but database not found ...
 			default:	
 				$this->setMessage('bas_sqlx_error', 'dbGenericError', array('errno'=> $this->conn->errno, 'error'=> $this->conn->error)); //Any other error

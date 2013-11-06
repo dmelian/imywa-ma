@@ -8,7 +8,7 @@ class ma_sys_manager{
 	public $environment;
 	public $texts;
 	public $currentSession;
-	
+	public $currConnection;
 
 	public function __construct(){
 

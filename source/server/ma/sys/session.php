@@ -138,7 +138,7 @@ class ma_sys_session extends ma_object {
 			
 		case 'anonymous':
 			$this->user= 'anonymous';
-			$this->password= '';
+			$this->password= 'password';
 			$this->authenticated= true;
 			break;
 			
@@ -201,9 +201,13 @@ class ma_sys_session extends ma_object {
 	}
 	
 	private function executeRequest(){
+		global $_MANAGER;
+		
+		$app= $this->app[$this->currentApp];
+		$_MANAGER->currConnection= new ma_sql_connection( $app->host, $app->mainDb, $this->user, $this->password );
 		
 		$config= array_merge($this->environment, $this->request);
-		$responseClass= $this->app[$this->currentApp]->mediaType . "_response";
+		$responseClass= $app->mediaType . "_response";
 		if ( class_exists( $responseClass ) ) $response= new $responseClass($config);
 		else $response= new ma_sys_response($config); //Applications without ajax has not to define the response class.
 
@@ -214,8 +218,7 @@ class ma_sys_session extends ma_object {
 			break;
 			
 		default:
-			$this->app[$this->currentApp]->executeAction(
-				$this->request['action']
+			$app->executeAction( $this->request['action']
 				, $this->request['source']
 				, $this->request['target']
 				, $this->request['options']
@@ -228,11 +231,13 @@ class ma_sys_session extends ma_object {
 			$response->paint();
 			
 		} else {
-			$documentClass= $this->app[$this->currentApp]->mediaType . "_document";
+			$documentClass= $app->mediaType . "_document";
 			$document= new $documentClass($config);
 			$this->paint($document);
 			$document->paint();
 		}
+		
+		$_MANAGER->currConnection->close();
 
 	}
 	
