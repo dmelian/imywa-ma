@@ -5,7 +5,7 @@ class ma_sql_object extends ma_object{
 	
 	protected function call( $procedure, $params=array() ){
 		global $_MANAGER;
-		$_MANAGER->currConnection->call($procedure, $params);
+		return $_MANAGER->currConnection->call($procedure, $params);
 	}
 	
 	protected function getError() {
