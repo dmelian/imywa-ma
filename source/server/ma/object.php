@@ -1,7 +1,6 @@
 <?php
  
 class ma_object{
-
 	
 	public function __construct() {
 		$this->loadTexts( get_called_class() );
@@ -21,19 +20,25 @@ class ma_object{
 		}
 		$fileName= "{$_MANAGER->environment['usrDir']}/data/texts/$fileName";
 		if ( is_dir( $fileName ) ) $fileName.= "/default";
+		$myfilename= "$fileName.{$_MANAGER->environment['language']}";
 		$_MANAGER->texts->loadFile( $id, "$fileName.{$_MANAGER->environment['language']}" );
 	}
 	
-	protected function caption( $id, $params='' ){ 
-		global $_MANAGER; return
+	protected function caption( $id, $params='', $local=true ){
+		global $_MANAGER; 
 		
-		$_MANAGER->texts->getCaption( get_called_class() . "_$id", $params ); 
+		$module= $local ? get_called_class() . '_' : '';
+		return $_MANAGER->texts->getCaption( "$module$id", $params ); 
 	}
 	
-	protected function description( $id='', $params='' ){ 
+	protected function description( $id='', $params='', $local=true ){ 
 		global $_MANAGER;
 		
-		return $_MANAGER->texts->getDescription( get_called_class() . "_$id", $params ); 
+		if ( $id ){
+			$module= $local ? get_called_class() . '_' : '';
+			return $_MANAGER->texts->getDescription( "$module$id", $params );
+			
+		} else return $_MANAGER->texts->getLastIdDescription();
 	}
 
 	

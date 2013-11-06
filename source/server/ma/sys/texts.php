@@ -7,8 +7,8 @@ class ma_sys_texts{
 	private $lastId= '', $lastParams= '';
 	
 	public function getCaption($id, $params){
-		$this->lastId= $id;	$this->lastParams= $params;
-		$caption= isset($this->captions[$id])?addslashes($this->captions[$id]) : "TEXT[$id] undefined";
+		$this->lastId= $id; $this->lastParams= $params;
+		$caption= isset( $this->captions[$id] ) ? addslashes($this->captions[$id]) : "TEXT[$id] undefined";
 		if (is_array($params)){
 			extract($params, EXTR_PREFIX_ALL,'');
 			eval ("\$caption = \"$caption\";");

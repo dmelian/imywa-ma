@@ -46,7 +46,7 @@ class ma_sys_manager{
 	
 	public static function phpErrorHandler( $errno, $errstr, $errfile, $errline, $errcontext ){
 		global $_MANAGER;
-		echo "<p>Error $errno: $errstr on file $errfile at line $errline</p>";
+		//echo "<p>Error $errno: $errstr on file $errfile at line $errline</p>";
 		//TODO: Logs the error and set error count. If is an warning continue, else return true or die.
 		return true;
 	}

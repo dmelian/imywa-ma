@@ -204,7 +204,7 @@ class ma_sys_session extends ma_object {
 		global $_MANAGER;
 		
 		$app= $this->app[$this->currentApp];
-		$_MANAGER->currConnection= new ma_sql_connection( $app->host, $app->mainDb, $this->user, $this->password );
+		$_MANAGER->currConnection= new ma_sql_connection( $app->host, $app->mainDb, $this->user, $this->password, $app->dbTextId );
 		
 		$config= array_merge($this->environment, $this->request);
 		$responseClass= $app->mediaType . "_response";

@@ -1,43 +1,31 @@
 <?php
 
-class ma_sql_connection{
+class ma_sql_connection extends ma_object{
 	// It is no possible to extends form mysqli, because of you can not declare class attributes on the child class
 	public $success= false;
-	public $results; //results of a procedure call or a query.
-	public $return; //hash of the return of a procedure call
+	public $errorNo;
+	public $errorMessage;
 	
+	protected $config;
 	protected $conn; //The mysqli connection
-	
+	protected $results; //results of a procedure call or a query.
 	protected $resultIds; //The identifiers of the nonanonymous results
-	protected $host;
-	protected $database;
-	protected $user;
 	
-	public $message;
 	protected $closed= true;
 	protected $unfinishedTransaction= false;
 	
-	
-	//TODO: En el momento de crear la conección debe especificarse la aplicación para saber la base de datos a la que se conecta.
-	//Si no se especifica nada, se conecta a la base de datos por defecto de imywa.
-	/* La aplicación tiene su base de datos por defecto, que se llama igual que la aplicación
-	 * , o que es la base de datos [0] de la aplicación, o se define una mainDB
-	 * Cada base de datos puede tener particiones.
-	 * Una partición de una base de datos es la separación de todas sus tablas en dos bases de datos. 
-	 * En cada partición hay una base de datos padre que se queda con el mismo nombre y una base de datos hija que toma el nombre del padre 
-	 * seguido de guión bajo y el identificador de la instancia de la partición.
-	 * Este identificador de la partición se corresponde con una tabla de la base de datos padre.
-	 * Esta tabla identificadora de la partición, contiene tantos registros como instancias de base de datos hijas existan.
-	 * El identificador de la instancia hija es el campo 'name'.
-	 * 
-	 * Cada aplicación tiene un host de donde tira. Ya se habrá diseñado para que no tire de datos comunes con imywa.
-	 */ 
-	public function __construct($host, $database, $user, $password){
+	public function __construct($host, $database, $user, $password, $textId){
+		parent::__construct();
+		$this->loadTexts($textId); //TODO: suport multi database with theirs textids.
 		
-		$this->host= $host; $this->database= $database; $this->user= $user;
-		$this->conn= mysqli_init(); 
-		if (!$this->conn){ $this->setMessage('bas_sqlx_error', 'mysqliError'); return; }
-		if (@$this->conn->real_connect( $host, $user, $password, $database ) ) {
+		$this->config= array( 'host' => $host, 'database' => $database, 'user' => $user, 'textId' => $textId );
+		$this->conn= mysqli_init();
+		if (!$this->conn){ 
+			$this->ErrorNo= 'ESYS'; 
+			$this->errorMessage= $this->caption('mysqliError'); 
+			return; 
+		}
+		if ($this->conn->real_connect( $host, $user, $password, $database ) ) {
 			$this->conn->autocommit(false);
 			$this->conn->set_charset('utf8');
 			$this->success= true;
@@ -46,27 +34,19 @@ class ma_sql_connection{
 		} else $this->setError();
 	}
 
-    protected function setMessage($module, $id, $texts= false){ $this->message= array('module'=>$module, 'id'=>$id, 'texts'=>$texts); }
-    
-    protected function setError(){
-    	switch($this->conn->errno){
-			case 2005: 	$this->setMessage('bas_sqlx_error', 'unknownHost', array('host'=>$this->host)); break; // connect_errno: 2005 - Unknown MySQL server host ...
+	protected function setError(){
+		switch($this->conn->errno){
+			case 2005:	$errorId= 'unknownHost'; break; // connect_errno: 2005 - Unknown MySQL server host ...
 			case 1044: 
-			case 1045: 	$this->setMessage('bas_sqlx_error', 'accessDenied', array('user'=>$this->user)); break; // connect_errno: 1044 y 1045 - Access denied for user ...
-			case 1049: 	$this->setMessage('bas_sqlx_error', 'unknownDatabase', array('database'=>$this->database)); break; // connect_errno: 1049 - User authenticated but database not found ...
-			default:	
-				$this->setMessage('bas_sqlx_error', 'dbGenericError', array('errno'=> $this->conn->errno, 'error'=> $this->conn->error)); //Any other error
-		} 
-    }
-    
-	public function getMessageBox(){
-		return new bas_html_messageBox($this->message['module'], $this->message['id'], $this->message['texts']);
-	}
-	
-	public function getMessage(){
-		return $this->message['texts'];
-	}
+			case 1045:	$errorId= 'accessDenied'; break; // connect_errno: 1044 y 1045 - Access denied for user ...
+			case 1049:	$errorId= 'unknownDatabase'; break; // connect_errno: 1049 - User authenticated but database not found ...
+			default: 	$errorId= 'dbGenericError'; //Any other error
+		}
+		$params= array_merge( $this->config, array( 'errno' => $this->conn->errno, 'errmsg' => $this->conn->error) );
+		$this->errorMessage= $this->caption( $errorId, $params );
 		
+	}
+
 	public function commit(){
 		if ($this->closed) return;
 		if ($this->unfinishedTransaction) {
@@ -103,72 +83,62 @@ class ma_sql_connection{
 		$this->close();
 	}
 	
-	public function call($module, $action, $params=array()){
-		global $_SESSION;
-		global $_LOG;
+	public function call($procedure, $params=array()){
 		
-		if ($this->closed) return;
+		if ( $this->closed ) return;
 		$this->closeResults();
 		
-		if ($this->success){
-			$query= "call {$module}_$action" . $this->expand($params);
-			$_LOG->log("PROC> {$this->host}:{$this->database}:{$_SESSION->user} $query");
-			$this->success= @$this->conn->real_query($query);
-			if ($this->success){
+		if ( $this->success ){
+			if( !$this->conn->real_query( 'set @errorno = null' ) ); //TODO: log this error.
+			$query= "call $procedure" . $this->expand( $params );
+			//TODO: $_LOG->log("PROC> {$this->host}:{$this->database}:{$_SESSION->user} $query");
+			$this->success= $this->conn->real_query( $query );
+			if ( $this->success ){
 				$this->unfinishedTransaction= true;
-				unset($this->results); $this->results= array();
-				while ($this->conn->more_results()){
-					$this->results[]= new bas_sqlx_resultIterator($this->conn->store_result());
+				
+				// retrieve the posible results.
+				unset( $this->results ); $this->results= array();
+				while ( $this->conn->more_results() ){
+					$this->results[]= new ma_sql_resultIterator( $this->conn->store_result() );
 					$this->conn->next_result();
 				}
-				unset($this->resultIds);
-				for($result=0; $result < count($this->results)-1; $result++){
-					$firstRow=$this->results[$result]->current();
-					if (isset($firstRow['resultId'])) {
+				
+				// named the retrieved results and look for an error.
+				unset( $this->resultIds );
+				for( $result=0; $result < count($this->results); $result++ ){
+					$firstRow= $this->results[$result]->current();
+					if ( isset( $firstRow['resultId'] ) ) {
 						$this->resultIds[$firstRow['resultId']]= $result;
 					}
 				}
-				$lastResult= count($this->results)-1;
-				if ($lastResult >= 0){
-					$this->return= $this->results[$lastResult]->current(); 
-					$this->results[$lastResult]->close();
-					unset($this->results[$lastResult]);
-
-					// Application (Logical) error.
-					if (isset($this->return['error'])) $this->success= $this->return['error'] == 0;
-					
-					if (isset($this->return['idmessage'])){
-						if (!isset($this->return['idmodule'])){
-							if ($endIdModule=strpos($this->return['idmessage'],'-')) {
-								$this->return['idmodule']= substr($this->return['idmessage'],0,$endIdModule);
-								$this->return['idmessage']= substr($this->return['idmessage'],$endIdModule+1);								
-							} else $this->return['idmodule']= '';
-						}
-						$this->setMessage($this->return['idmodule'], $this->return['idmessage'], $this->return);
-						//TODO: Revisar esto de nuevo porque no me convence.
-						//DONE: Especificar el módulo correcto de donde sacar el texto.
-						/* ¿ De donde vamos a sacar los ficheros de captions y descripciones de la base de datos. */
-						/* Vamos a especificar un fichero por cada módulo de definición de la base de datos.
-						 * Las particiones se crean como un módulo mas, por lo que al lenguaje se refiere.
-						 * Los procedimientos son los que espeficican el módulo del lenguaje con el idmodule o 
-						 * anteponiendolo en el idmessage con un guion medio */
-						
-						
-					} elseif (isset($this->return['message'])) {
-						extract($this->return, EXTR_PREFIX_ALL,'');
-						eval ('$message = "' . $this->return['message'] . '";');
-						$idmessage= $this->success ? 'defaultSuccess' : 'defaultError';
-						$this->setMessage('bas_sqlx_error', $idmessage, compact('message'));
-					}
+				
+				/* Manage application errors
+				 * 
+				 * If an error ocurrs the session var @errorno has the error number 
+				 * and the result 'ma_error' the error asociated info. 
+				 */
+				if ( !$this->conn->real_query( 'select @errorno as errorno' ) ); //TODO: log this error
+				$errRslt= $this->conn->use_result(); $errRow= $errRslt->fetch_assoc(); $errRslt->free();
+				$this->success = is_null( $errRow['errorno'] ); 
+				if ( !$this->success ){
+					$this->errorNo= $errRow['errorno'];
+					$this->errorMessage= $this->caption(
+						"{$this->config['textId']}_$this->errorNo"
+						, $this->getResult('ma_error')->current()
+						, false
+					);
 				}
 
 			} else {
-				$_LOG->log("Error en la llamada a store procedure");
+				// Manage mysql errors.
+				
+				//TODO: $_LOG->log("Error en la llamada a store procedure");
 				$this->setError();
 			}
 		}
 		return $this->success; 
 	}
+
 	
 	public function query($query){
 		global $_SESSION;
@@ -179,7 +149,7 @@ class ma_sql_connection{
 		
 		$sucess=false;
 		if ($this->success){
-			$success= @$this->conn->real_query($query);
+			$success= $this->conn->real_query($query);
 			if ($success){
 				unset($this->results); $this->results= array();
 				$this->results[]= new bas_sqlx_resultIterator($this->conn->store_result());

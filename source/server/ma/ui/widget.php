@@ -3,6 +3,7 @@ class ma_ui_widget extends ma_object{
 	protected $uid;
 	
 	public function __construct(){
+		parent::__construct();
 		$this->uid= $this->newUId();
 		
 	}

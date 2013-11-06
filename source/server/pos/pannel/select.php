@@ -11,9 +11,15 @@ class pos_pannel_select extends pos_pannel{
 	}
 	
 	public function OnPaintContent( $document ){
-		//if ( $this->conn->call('pos', 'getItemButtons') ){
-			
-		//}
+		global $_MANAGER;
+		if ( !$this->call( '_presale_bill', array( 'kanga',1,2 ) ) ) {
+			$document->output( '<p>Error: '. $this->getError() .'</p>' );
+		} else {
+			$document->output( '<p>Procedure executed</p>' );
+		}
+		
+		$this->debug($_MANAGER,'manager..');
+		
 	}
 	
 	

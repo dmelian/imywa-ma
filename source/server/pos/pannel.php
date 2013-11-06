@@ -1,10 +1,13 @@
 <?php
-class pos_pannel extends ma_object{
+class pos_pannel extends ma_sql_object{
 	protected $x, $y, $width, $height;
 	
 	public function __construct($x, $y, $width, $height){
+		
+		parent::__construct();
 		$this->x= $x; $this->y = $y;
 		$this->width= $width; $this->height= $height;
+		
 	}
 	
 	public function OnPaint( $document ){

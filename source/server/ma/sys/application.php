@@ -3,8 +3,12 @@
 class ma_sys_application extends ma_object{
 	
 	/* Application attributes that derived clases must define
-	public $mediaType, $appName, $startForm;
-	public $host, $mainDb
+	public $mediaType
+	public $appName
+	public $startForm;
+	public $host
+	public $mainDb
+	public $dbTextId
 	*/
 	protected $currentForm;
 	protected $breadCrumb= array();
@@ -13,6 +17,7 @@ class ma_sys_application extends ma_object{
 	private $stackTop= 0;
 	
 	public function __construct($environment){
+		parent::__construct();
 		//TODO Initialize the application.
 		$this->appDir= "{$environment['sessionDir']}/{$this->appName}";
 		$success= mkdir($this->appDir."/forms", 0777, true);
