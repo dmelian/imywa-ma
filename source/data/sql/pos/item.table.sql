@@ -10,11 +10,13 @@ create table if not exists item(
 	catalog varchar(10),
 	type enum( 'group', 'item' ),
 	itemGroup varchar(20),
+	itemOrder integer,
 	description varchar(30),
 	price double,
 	VATType varchar(10),
 
-	primary key ( business, item )
+	primary key ( business, item ),
+	index (business, catalog, itemGroup, type, item )
 ) engine InnoDB, default character set utf8;
 
 

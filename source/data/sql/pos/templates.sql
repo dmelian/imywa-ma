@@ -19,18 +19,54 @@ alter table mmm add
 
 -- PROCEDURE
 
-select @currFile as file, 'PROCEDURE _mmm_xxx (  ) : (  )' as command;
-drop procedure if exists _mmm_xxx$$
-create procedure _mmm_xxx(
+delimiter $$
+
+select @currFile as file, 'PROCEDURE mmm (  ) : (  )' as command$$
+drop procedure if exists mmm$$
+create procedure mmm(
 
 
-) _mmm_xxx: begin
+) mmm: begin
 
-	if not @errorNo is null then leave _mmm_xxx; end if;
-
-
-end _mmm_xxx$$
+	if not @errorNo is null then leave mmm; end if;
 
 
+end mmm$$
+
+delimiter ;
+
+-- PROCEDURE - CURSOR
+
+select @currFile as file, 'PROCEDURE mmm (  ) : (  )' as command$$
+drop procedure if exists mmm$$
+create procedure mmm(
+
+
+) mmm: begin
+
+	declare ds_ _;
+	declare notfound boolean default false;
+	declare endds boolean;
+	declare ds cursor for
+		select _;
+	declare continue handler for not found set notfound = true;
+
+	if not @errorNo is null then leave mmm; end if;
+
+	open ds;
+	repeat
+		set notfound = false;
+		fetch ds into ds_;
+		set endds = notfound;
+		if not endds then
+
+
+
+
+		end if;
+	until endds end repeat;
+	close ds;	
+
+end mmm$$
 
 
