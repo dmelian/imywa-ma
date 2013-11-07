@@ -13,4 +13,9 @@ class ma_sql_object extends ma_object{
 		return $_MANAGER->currConnection->errorMessage;
 	}
 	
+	protected function getResult($resultId){
+		global $_MANAGER;
+		return $_MANAGER->currConnection->getResult($resultId);
+	}
+	
 }

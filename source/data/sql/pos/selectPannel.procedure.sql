@@ -25,7 +25,7 @@ create procedure _selectPannel_init(
 
 end _selectPannel_init$$
 
-select @currFile as file, 'PROCEDURE _selectPannel_loadItem ( business, pos, itemGroup ) : (  )' as command$$
+select @currFile as file, 'PROCEDURE _selectPannel_loadItem ( business, pos, itemGroup )' as command$$
 drop procedure if exists _selectPannel_loadItem$$
 create procedure _selectPannel_loadItem(
 
@@ -52,7 +52,7 @@ create procedure _selectPannel_loadItem(
 
 end _selectPannel_loadItem$$
 
-select @currFile as file, 'PROCEDURE _selectPannel_orderButtons ( business, pos ) : (  )' as command$$
+select @currFile as file, 'PROCEDURE _selectPannel_orderButtons ( business, pos )' as command$$
 drop procedure if exists _selectPannel_orderButtons$$
 create procedure _selectPannel_orderButtons(
 
@@ -96,29 +96,31 @@ end _selectPannel_orderButtons$$
 
 
 
-/*
-select @currFile as file, 'PROCEDURE pos_pannel_select_getButtons (  ) : (  )' as command;
-drop procedure if exists pos_pannel_select_getButtons$$
-create procedure pos_pannel_select_getButtons(
+select @currFile as file, 'PROCEDURE _selectPannel_getButtons ( business, pos )' as command;
+drop procedure if exists _selectPannel_getButtons$$
+create procedure _selectPannel_getButtons(
 
 	in ibusiness varchar(10),
 	in ipos integer
 
-) pos_pannel_select_getButtons: begin
+) _selectPannel_getButtons: begin
 
-	declare _currentGroup varchar(20);
+	if not @errorNo is null then leave _selectPannel_getButtons; end if;
 
-	if not @errorNo is null then leave pos_pannel_select_getButtons; end if;
+	select 'buttons' as resultId, 
+		button.id, button.caption, button.amount, button.quantity, button.secondCaption
+		
+		from selectPannel as pannel inner join selectButton as button 
+			on pannel.business = button.business and pannel.pos = button.pos
+		where pannel.business = ibusiness and pannel.pos = ipos
+			and ( button.buttonOrder div pannel.pageWidth = pannel.currentPage 
+				or button.bound
+			)
+	;
 
-	select 'buttons' as resultId,
-		from item
-		where business = ibussines
-			and group = _currentGroup
-			and order div _pageWidth = _currentPage;
 
 
+end _selectPannel_getButtons$$
 
-end pos_pannel_select_getButtons$$
-*/
 
 delimiter ;

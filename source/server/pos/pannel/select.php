@@ -9,16 +9,29 @@ class pos_pannel_select extends pos_pannel{
 		$this->colCount= $colCount;
 		
 	}
+
+	public function OnLoad(){
+		$this->call( '_selectPannel_init', array( 'amupark', 1, $this->rowCount * $this->colCount ) );
+		$this->call( '_selectPannel_loadItem', array( 'amupark', 1, 'main' ) );
+	}
 	
 	public function OnPaintContent( $document ){
-		global $_MANAGER;
-		if ( !$this->call( '_presale_bill', array( 'kanga',1,3 ) ) ) {
-			$document->output( '<p>Error: '. $this->getError() .'</p>' );
-		} else {
-			$document->output( '<p>Procedure executed</p>' );
-		}
 		
-		$this->debug($_MANAGER,'manager..');
+		if ( $this->call( '_selectPannel_getButtons', array( 'amupark', 1 ) ) ) {
+			
+			$document->output( '<p>Buttons:</p>' );
+			if ( $buttons= $this->getResult( 'buttons' ) ) {
+				$document->output( '<table><tr><th>id</th><th>caption</th></tr>' );
+				foreach($buttons as $button){
+					$document->output( "<tr><td>{$button['id']}</td><td>{$button['caption']}</td></tr>" );
+				}
+				$buttons->close();
+				$document->output( '</table>' );
+			}
+			
+		} else {
+			$document->output( '<p>Error: '. $this->getError() .'</p>' );
+		}
 		
 	}
 	

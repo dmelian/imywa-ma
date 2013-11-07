@@ -104,12 +104,13 @@ class ma_sql_connection extends ma_object{
 				}
 				
 				// named the retrieved results and look for an error.
-				unset( $this->resultIds );
+				unset( $this->resultIds ); $this->resultIds= array();
 				for( $result=0; $result < count($this->results); $result++ ){
 					$firstRow= $this->results[$result]->current();
 					if ( isset( $firstRow['resultId'] ) ) {
 						$this->resultIds[$firstRow['resultId']]= $result;
 					}
+					//TODO error if the result has no rows and you cannot read the resultId.
 				}
 				
 				/* Manage application errors
@@ -167,7 +168,7 @@ class ma_sql_connection extends ma_object{
 	
 	public function getResult($resultId){
 		if (isset($this->resultIds[$resultId])) return $this->results[$this->resultIds[$resultId]]; 
-		else return array();
+		else return array(); //TODO return a signal that the result is not found.
 	}
 	
 	public function closeResults(){

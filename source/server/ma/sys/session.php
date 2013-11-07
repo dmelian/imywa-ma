@@ -105,6 +105,7 @@ class ma_sys_session extends ma_object {
 	}
 	
 	public function newRequest(){
+		global $_MANAGER;
 		
 		$this->lastRequestTime= date('Y-m-d H:i:s');
 		if (!$this->sessionId) {
@@ -112,17 +113,35 @@ class ma_sys_session extends ma_object {
 			exit( $this->caption('ERR_CREATESESSION') );
 		}
 		if (!$this->authenticated) $this->authenticate();
+
+		
+		
+		
 		
 		if ($this->authenticated) {
 			$this->extractRequestProperties();
 			if (!$this->currentApp){
-				$app= $this->openApplication();
+				
+				$appClassname= $this->environment['defaultApp'];
+				$app= new $appClassname($this->environment);
+				// database must be accessed in the application initialization. 
+				// So the host, mainDb and dbTextId must be created inside the application constructor.
+				
 				$this->app[$app->appName]= $app;
-				$this->currentApp= $app->appName; 
+				$this->currentApp= $app->appName;
+				$_MANAGER->currConnection= new ma_sql_connection( $app->host, $app->mainDb, $this->user, $this->password, $app->dbTextId );
+				$app->initialize(); //TODO must have an uid.
+				
+			} else {
+				$app= $this->app[$this->currentApp];
+				$_MANAGER->currConnection= new ma_sql_connection( $app->host, $app->mainDb, $this->user, $this->password, $app->dbTextId );
+				
 			}
 			
 			$this->sequence++;
 			$this->executeRequest();
+			$_MANAGER->currConnection->close();
+			
 		}
 		//TODO: if ($this->currentApp) $this->app[$this->currentApp]->prepareForSerialize(); // to unset the current form.
 		$this->serialize();
@@ -189,22 +208,9 @@ class ma_sys_session extends ma_object {
 		
 	}
 	
-	private function openApplication($app='default'){
-		//	TODO Access to user data an create and initialize his default application.
-		
-		$appClassname= $app == 'default' ? $this->environment['defaultApp'] : $app;
-		$app= new $appClassname($this->environment);
-		$app->initialize(); //TODO must have an uid.
-		return $app;
-		
-		
-	}
-	
 	private function executeRequest(){
-		global $_MANAGER;
 		
 		$app= $this->app[$this->currentApp];
-		$_MANAGER->currConnection= new ma_sql_connection( $app->host, $app->mainDb, $this->user, $this->password, $app->dbTextId );
 		
 		$config= array_merge($this->environment, $this->request);
 		$responseClass= $app->mediaType . "_response";
@@ -237,7 +243,6 @@ class ma_sys_session extends ma_object {
 			$document->paint();
 		}
 		
-		$_MANAGER->currConnection->close();
 
 	}
 	
