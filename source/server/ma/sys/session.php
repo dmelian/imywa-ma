@@ -184,20 +184,7 @@ class ma_sys_session extends ma_object {
 		$this->request['remoteIp']= $_SERVER['REMOTE_ADDR'];
 		$this->request['remotePort']= $_SERVER['REMOTE_PORT'];
 
-		$this->request['action']= substr($_SERVER['SCRIPT_NAME']
-				, strrpos( $_SERVER['SCRIPT_NAME'], '/' ) + 1
-				, strrpos( $_SERVER['SCRIPT_NAME'], '.' ) - strlen( $_SERVER['SCRIPT_NAME'] ) );
-		if ( $this->request['action'] == 'index' ) $this->request['action'] = 'refresh';
-		if ( ($targetEnd= strpos($_SERVER['QUERY_STRING'], '&') ) !== false ){
-			$this->request['target']= urldecode( substr( $_SERVER['QUERY_STRING'], 0, $targetEnd ));
-		} else {
-			$this->request['target']= urldecode( $_SERVER['QUERY_STRING'] ); 
-		}
 		$this->request['options']= array_merge($_GET, $_POST);
-		
-		if ( !isset($this->request['source']) ) $this->request['source']= '';
-		if ( !isset($this->request['target']) ) $this->request['target']= '';
-		
 		foreach( $this->request['options'] as $option => $value ){
 			if ( substr( $option, 0, 1 ) == '_' ) {
 				$option= substr( $option, 1 );
@@ -205,6 +192,21 @@ class ma_sys_session extends ma_object {
 				unset( $this->request['options']["_$option"] );
 			}
 		}
+		
+		if ( isset($this->request['action']) ){
+			$action= substr($_SERVER['SCRIPT_NAME']
+					, strrpos( $_SERVER['SCRIPT_NAME'], '/' ) + 1
+					, strrpos( $_SERVER['SCRIPT_NAME'], '.' ) - strlen( $_SERVER['SCRIPT_NAME'] ) );
+			$this->request['action']= ( $action && ($action != 'index') ) ? $action : 'refresh';
+			
+			if ( ($targetEnd= strpos($_SERVER['QUERY_STRING'], '&') ) !== false ){
+				$this->request['target']= urldecode( substr( $_SERVER['QUERY_STRING'], 0, $targetEnd ));
+			} else {
+				$this->request['target']= urldecode( $_SERVER['QUERY_STRING'] ); 
+			}
+		}
+		if ( !isset($this->request['source']) ) $this->request['source']= ''; //TODO: get the source.
+		if ( !isset($this->request['target']) ) $this->request['target']= '';
 		
 	}
 	

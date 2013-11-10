@@ -8,3 +8,7 @@ body{
 .pannel{
 	position: absolute;
 }
+
+.backstage{
+	display: none;
+}

@@ -18,21 +18,11 @@ class pos_pannel_select extends pos_pannel{
 	public function OnPaintContent( $document ){
 		
 		if ( $this->call( '_selectPannel_getButtons', array( 'amupark', 1 ) ) ) {
-			
-			$document->output( '<p>Buttons:</p>' );
 			if ( $buttons= $this->getResult( 'buttons' ) ) {
-				$document->output( '<table><tr><th>id</th><th>caption</th></tr>' );
-				foreach($buttons as $button){
-					$document->output( "<tr><td>{$button['id']}</td><td>{$button['caption']}</td></tr>" );
-				}
+				foreach($buttons as $button) $document->button( $button );
 				$buttons->close();
-				$document->output( '</table>' );
 			}
-			
-		} else {
-			$document->output( '<p>Error: '. $this->getError() .'</p>' );
 		}
-		
 	}
 	
 	
