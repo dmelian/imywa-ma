@@ -53,11 +53,11 @@ class ma_object{
 		switch ($_MANAGER->environment['logType']){
 		case 'file':
 			$filename= "{$_MANAGER->environment['usrDir']}/run/log";
-			$prefix= "$section [" . gmdate('Y-m-d H:i:s') . "]:\t";
+			$prefix= "$section [" . gmdate('Y-m-d H:i:s') . '] ';
 			break;
 		case 'directory': 
 			$filename= "{$_MANAGER->environment['usrDir']}/run/log/$section";
-			$prefix= gmdate('Y-m-d H:i:s') . ":\t";
+			$prefix= gmdate('Y-m-d H:i:s') . ' ';
 			break;
 		}
 		

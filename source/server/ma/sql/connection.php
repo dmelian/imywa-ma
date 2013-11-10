@@ -13,6 +13,7 @@ class ma_sql_connection extends ma_object{
 	
 	protected $closed= true;
 	protected $unfinishedTransaction= false;
+	protected $callingClass='';
 	
 	public function __construct($host, $database, $user, $password, $textId){
 		parent::__construct();
@@ -35,6 +36,7 @@ class ma_sql_connection extends ma_object{
 	}
 
 	protected function setError(){
+		$this->errorNo= "ME-{$this->conn->errno}";
 		switch($this->conn->errno){
 			case 2005:	$errorId= 'unknownHost'; break; // connect_errno: 2005 - Unknown MySQL server host ...
 			case 1044: 
@@ -45,6 +47,17 @@ class ma_sql_connection extends ma_object{
 		$params= array_merge( $this->config, array( 'errno' => $this->conn->errno, 'errmsg' => $this->conn->error) );
 		$this->errorMessage= $this->caption( $errorId, $params );
 		
+	}
+	
+	public function setCallingInfo($class){
+		$this->callingClass= $class;
+	}
+	
+	protected function logError($errorType, $query){
+		$this->log("$errorType {$this->errorNo}",'sql.error');
+		$this->log("\tCLASS: {$this->callingClass}", 'sql.error');
+		$this->log("\tPROC: $query",'sql.error');
+		$this->log("\tERR: {$this->errorNo} - {$this->errorMessage}",'sql.error');
 	}
 
 	public function commit(){
@@ -91,7 +104,7 @@ class ma_sql_connection extends ma_object{
 		if ( $this->success ){
 			if( !$this->conn->real_query( 'set @errorno = null' ) ); //TODO: log this error.
 			$query= "call $procedure" . $this->expand( $params );
-			//TODO: $_LOG->log("PROC> {$this->host}:{$this->database}:{$_SESSION->user} $query");
+			$this->log("PROC> {$this->config['host']}:{$this->config['database']}:{$this->config['user']} $query", 'sql');
 			$this->success= $this->conn->real_query( $query );
 			if ( $this->success ){
 				$this->unfinishedTransaction= true;
@@ -128,13 +141,14 @@ class ma_sql_connection extends ma_object{
 						, $this->getResult('ma_error')->current()
 						, false
 					);
+					$this->logError('APP-ERROR', $query);
 				}
 
 			} else {
 				// Manage mysql errors.
 				
-				//TODO: $_LOG->log("Error en la llamada a store procedure");
 				$this->setError();
+				$this->logError('SQL-ERROR', $query);
 			}
 		}
 		return $this->success; 
