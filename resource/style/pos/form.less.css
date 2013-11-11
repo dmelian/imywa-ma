@@ -12,3 +12,16 @@ body{
 .backstage{
 	display: none;
 }
+
+.pos-button {
+	-moz-border-bottom-colors: none;
+	-moz-border-left-colors: none;
+	-moz-border-right-colors: none;
+	-moz-border-top-colors: none;
+	background-color: #0000FF;
+	border-color: -moz-use-text-color;
+	border-image: url("image/posbutton.png") 6 6 6 6 repeat stretch;
+	border-style: solid;
+	border-width: 6px;
+	color: #FFFFFF;
+}

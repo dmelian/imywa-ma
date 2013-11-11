@@ -20,18 +20,6 @@ Esto es lo que pone Borja.
 </div>
 
 Y mi estilo:
-.menuPOS {
-    -moz-border-bottom-colors: none;
-    -moz-border-left-colors: none;
-    -moz-border-right-colors: none;
-    -moz-border-top-colors: none;
-    background-color: #0000FF;
-    border-color: -moz-use-text-color;
-    border-image: url("images/posbutton.png") 6 6 6 6 repeat stretch;
-    border-style: solid;
-    border-width: 6px;
-    color: #FFFFFF;
-}
 
 El script ajax action
  bas_frmx_form.prototype.sendAction= function(action, params, type){//frameid,action, params){
