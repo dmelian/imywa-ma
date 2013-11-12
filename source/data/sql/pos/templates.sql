@@ -1,5 +1,5 @@
 set @fileCount= @fileCount + 1;
-set @currFile= concat_ws(' - ', @fileCount, 'MMM..SQL');
+set @currFile= concat_ws(' - ', @fileCount, 'MMM.TABLE.SQL');
 
 -- TABLE
 

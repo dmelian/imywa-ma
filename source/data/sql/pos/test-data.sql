@@ -1,14 +1,20 @@
-set @business= 'amupark';
+set @business= 'mybusiness';
 set @pos= 1;
 set @catalog= 'default';
 set @vat= 'general';
 set @mainGroup= 'main';
 set @item= 1;
 
+insert into business ( business ) values ( @business );
+
 insert into pos ( business, pos, catalog )	values 
 	( @business, @pos, @catalog )
 ;
 insert into selectPannel ( business, pos ) select business, pos from pos; 
+
+insert into catalog( business, catalog, mainItemGroup ) values
+	( @business, @catalog, @mainGroup )
+;
 
 
 insert into item ( business, item, catalog, type, description ) values
