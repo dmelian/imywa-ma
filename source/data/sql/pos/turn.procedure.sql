@@ -15,7 +15,16 @@ create procedure _turn_check(
 
 ) _turn_check: begin
 
+	declare _workDay date;
+	declare _turn integer;
+
 	if not @errorNo is null then leave _turn_check; end if;
+
+	select business.currentWorkDay, pos.currentTurn into _workDay, _turn
+		from business inner join pos on business.business = pos.business
+	;
+
+	
 
 
 end _turn_check$$
