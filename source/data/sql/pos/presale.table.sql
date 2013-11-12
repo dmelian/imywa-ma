@@ -11,12 +11,7 @@ create table if not exists presale(
 	turn integer not null,
 	presale integer not null,
 	state enum ('draft', 'deleted', 'billed', 'revising', 'annulled', 'charged'),
-	listAmount double default 0,
-	discount float default 0,
-	discountAmount double default 0,
-	presaleAmount double default 0,
-	ticketNo varchar(20),
-	saleAmount double default 0,
+	sale varchar(20),
 	chargedAmount double default 0,
 	owedAmount double default 0,
 	primary key ( business, pos, workDay, turn, presale )
@@ -51,12 +46,29 @@ create table if not exists presaleLine(
 	lineNo integer not null,
 	version integer not null,
 	creationTime datetime,
+	catalog varchar(10) not null,
 	item varchar(20) not null,
 	quantity integer default 0,
 	price double default 0,
-	listPrice double default 0,
 	primary key ( business, pos, workDay, turn, presale, lineNo )
 	
+) engine InnoDB, default character set utf8;
+
+select @currFile as file, 'TABLE presaleDiscount' as command;
+create table if not exists presaleDiscount(
+
+	business varchar(10) not null,
+	pos integer not null,
+	workDay date not null,
+	turn integer not null,
+	presale integer not null,
+	discountLine integer not null,
+	discountType enum( 'line', 'item', 'global'),
+	item varchar(20),
+	lineNo integer,
+	discountpercentage float,
+	discountAmount double,
+	primary key ( business, pos, workDay, turn, presale )
 ) engine InnoDB, default character set utf8;
 
 
@@ -68,6 +80,5 @@ create table if not exists reason(
 	primary key (reason)
 	
 ) engine InnoDB, default character set utf8;
-
 
 

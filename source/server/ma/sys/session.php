@@ -103,6 +103,8 @@ class ma_sys_session extends ma_object {
 		
 		return $this->lastUId;
 	}
+
+	public function getSessionId(){ return $this->sessionId; }
 	
 	public function newRequest(){
 		global $_MANAGER;

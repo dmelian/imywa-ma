@@ -102,7 +102,7 @@ class ma_sql_connection extends ma_object{
 		$this->closeResults();
 		
 		if ( $this->success ){
-			if( !$this->conn->real_query( 'set @errorno = null' ) ); //TODO: log this error.
+			if( !$this->conn->real_query( 'set @errorno= null, @sessionId= "' . $this->getSessionId() . '";' ) ); //TODO: log this error.
 			$query= "call $procedure" . $this->expand( $params );
 			$this->log("PROC> {$this->config['host']}:{$this->config['database']}:{$this->config['user']} $query", 'sql');
 			$this->success= $this->conn->real_query( $query );

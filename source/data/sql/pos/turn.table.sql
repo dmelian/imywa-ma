@@ -9,6 +9,7 @@ create table if not exists turn(
 	pos integer not null,
 	workDay date not null,
 	turn integer not null,
+	catalog varchar(10),
 	opening datetime,
 	openUser varchar(10),
 	closing datetime,

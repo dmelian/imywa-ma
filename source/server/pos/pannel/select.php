@@ -11,13 +11,13 @@ class pos_pannel_select extends pos_pannel{
 	}
 
 	public function OnLoad(){
-		$this->call( '_selectPannel_init', array( 'amupark', 1, $this->rowCount * $this->colCount ) );
-		$this->call( '_selectPannel_loadItem', array( 'amupark', 1, 'main' ) );
+		$this->call( '_selectPannel_init', array( 'mybusiness', 1, $this->rowCount * $this->colCount ) );
+		$this->call( '_selectPannel_loadItem', array( 'mybusiness', 1, 'main' ) );
 	}
 	
 	public function OnPaintContent( $document ){
 		
-		if ( $this->call( '_selectPannel_getButtons', array( 'amupark', 1 ) ) ) {
+		if ( $this->call( '_selectPannel_getButtons', array( 'mybusiness', 1 ) ) ) {
 			if ( $buttons= $this->getResult( 'buttons' ) ) {
 				foreach($buttons as $button) $document->button( $button );
 				$buttons->close();

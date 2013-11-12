@@ -35,16 +35,27 @@ create procedure _selectPannel_loadItem(
 
 ) _selectPannel_loadItem: begin
 
+	declare _workDay date;
+	declare _turn integer;
+	declare _catalog varchar(10);
+
 	if not @errorNo is null then leave _selectPannel_loadItem; end if;
+
+	call _turn_check( ibusiness, ipos, _workDay, _turn );	
+	if not @errorNo is null then leave _selectPannel_loadItem; end if;
+
+	select catalog into _catalog from turn 
+		where business = ibusiness and pos = ipos and workDay = _workDay and turn = _turn
+	;
 
 	delete from selectButton where business = ibusiness and pos = ipos;
 
 	insert into selectButton(business, pos, id, caption, buttonOrder)
 		select ibusiness, ipos, item.item, item.description, item.itemOrder
-		from item inner join pos on item.business = pos.business and item.catalog = pos.catalog
+		from item inner join price on item.business = price.business and item.item = price.item
 		where item.business = ibusiness 
-			and pos.business = ibusiness and pos.pos = ipos
 			and item.itemGroup = igroup
+			and price.catalog= _catalog
 	;
 	
 	call _selectPannel_orderButtons( ibusiness, ipos );

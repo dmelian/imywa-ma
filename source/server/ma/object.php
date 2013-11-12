@@ -85,5 +85,10 @@ class ma_object{
 		global $_MANAGER;
 		return $_MANAGER->currentSession->newUId();
 	}
+
+	protected function getSessionId(){
+		global $_MANAGER;
+		return $_MANAGER->currentSession->getSessionId();
+	}	
 		
 }

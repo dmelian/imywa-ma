@@ -1,5 +1,6 @@
 TODO LIST
 ---------
 
-1. Keep all js widgets in separated files for a better browser debugger. Change the grunt send action.
-1. Discover why the php errors are not showing.
+- Open and check the turn before load de select pannel.
+- If the database is not found no errors are generated.
+

@@ -5,11 +5,12 @@ select @currFile as file, 'TABLE pos' as command;
 create table if not exists pos(
 	business varchar(10) not null,
 	pos integer not null,
-	ticketSerialNo varchar(10),
-	workDay date,
-	turn integer,
+	saleSerialNo varchar(10),
+	currentWorkDay date,
+	currentTurn integer,
 	status enum( 'opened', 'closed', 'locked' ),
-	catalog varchar(10),
+	defaultCatalog varchar(10),
+	currentSession varchar(20),
 
 	primary key ( business, pos )
 ) engine InnoDB, default character set utf8;

@@ -8,7 +8,7 @@ alter table presale add
 		on delete cascade on update cascade;
 		
 alter table presale add 
-	foreign key ( business, ticketNo ) references ticket ( business, ticketNo ) 
+	foreign key ( business, sale ) references sale ( business, sale ) 
 		on delete restrict on update cascade;
 
 
@@ -32,5 +32,10 @@ alter table presaleLine add
 
 alter table presaleLine add
 	foreign key ( business, item ) references item ( business, item ) 
-		on delete restrict on update restrict;
+		on delete restrict on update cascade;
+
+
+alter table presaleLine add
+	foreign key ( business, catalog ) references catalog ( business, catalog ) 
+		on delete restrict on update cascade;
 

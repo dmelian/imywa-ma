@@ -1,11 +1,11 @@
 set @fileCount= @fileCount + 1;
-set @currFile= concat_ws(' - ', @fileCount, 'TICKET.PROCEDURE.SQL');
+set @currFile= concat_ws(' - ', @fileCount, 'SALE.PROCEDURE.SQL');
 
 delimiter $$
 
-select @currFile as file, 'PROCEDURE _ticket_new ( business, pos, workDay, turn, presale ) : ( ticket, saleAmount )' as command;
-drop procedure if exists _ticket_new$$
-create procedure _ticket_new(
+select @currFile as file, 'PROCEDURE _sale_new ( business, pos, workDay, turn, presale ) : ( ticket, saleAmount )' as command;
+drop procedure if exists _sale_new$$
+create procedure _sale_new(
 
 	in ibusiness varchar(10),
 	in ipos integer,
@@ -15,13 +15,13 @@ create procedure _ticket_new(
 	out ticket varchar(20),
 	out saleAmount double
 
-) _ticket_new: begin
+) _sale_new: begin
 
 	declare inextTicket varchar(20);
 	declare iVATpercentage float;
 	declare function_return varchar(50);
 
-	if not @errorNo is null then leave _ticket_new; end if;
+	if not @errorNo is null then leave _sale_new; end if;
 
 	-- Generamos el nuevo ticket. Agrupamos los items y construimos las líneas de este.
 	select nextSerialNumber() into inextTicket ;
@@ -40,11 +40,11 @@ create procedure _ticket_new(
 
 
 
-end _ticket_new$$
+end _sale_new$$
 
-select @currFile as file, 'PROCEDURE _ticket_renew ( business, ticket, pos, workDay, turn, presale ) : ( saleAmount )' as command;
-drop procedure if exists _ticket_renew$$
-create procedure _ticket_renew(
+select @currFile as file, 'PROCEDURE _sale_renew ( business, ticket, pos, workDay, turn, presale ) : ( saleAmount )' as command;
+drop procedure if exists _sale_renew$$
+create procedure _sale_renew(
 
 	in ibusiness varchar(10),
 	in ticket varchar(20),
@@ -54,17 +54,17 @@ create procedure _ticket_renew(
 	in presale integer,
 	out saleAmount double
 
-) _ticket_renew: begin
+) _sale_renew: begin
 
-	if not @errorNo is null then leave _ticket_renew; end if;
+	if not @errorNo is null then leave _sale_renew; end if;
 
 
 
-end _ticket_renew$$
+end _sale_renew$$
 
-select @currFile as file, 'PROCEDURE _ticket_charge ( business, ticket, paymentType, chargedAmount ) : ( owedAmount  )' as command;
-drop procedure if exists _ticket_charge$$
-create procedure _ticket_charge(
+select @currFile as file, 'PROCEDURE _sale_charge ( business, ticket, paymentType, chargedAmount ) : ( owedAmount  )' as command;
+drop procedure if exists _sale_charge$$
+create procedure _sale_charge(
 
 	in ibusiness varchar(10),
 	in iticket varchar(20),
@@ -72,9 +72,9 @@ create procedure _ticket_charge(
 	in ichargedAmount double,
 	out iowedAmount double
 
-) _ticket_charge: begin
+) _sale_charge: begin
 
-	if not @errorNo is null then leave _ticket_charge; end if;
+	if not @errorNo is null then leave _sale_charge; end if;
 
 /*
 	select max(version) into _version from saleVersion where saleNo=isaleNo;
@@ -101,7 +101,7 @@ create procedure _ticket_charge(
 */
 
 
-end _ticket_charge$$
+end _sale_charge$$
 
 
 delimiter ;

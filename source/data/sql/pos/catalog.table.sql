@@ -6,8 +6,8 @@ create table if not exists catalog(
 
 	business varchar(10) not null,
 	catalog varchar(10) not null,
-	mainItemGroup varchar(20)
+	mainItemGroup varchar(20),
 
-	primary key ( busines, catalog )
+	primary key ( business, catalog )
 ) engine InnoDB, default character set utf8;
 
