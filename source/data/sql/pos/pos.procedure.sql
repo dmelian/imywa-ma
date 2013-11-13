@@ -12,9 +12,12 @@ create procedure pos_openSession(
 
 ) pos_openSession: begin
 
+	declare _currentSession varchar(20);
+	
 	if not @errorNo is null then leave pos_openSession; end if;
 
-	update pos set currentSession= @sessionId
+	update pos set 
+		currentSession= @sessionId
 		where business = ibusiness and pos = ipos
 	;
 

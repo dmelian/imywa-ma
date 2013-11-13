@@ -19,7 +19,11 @@ class pos_pannel_select extends pos_pannel{
 		
 		if ( $this->call( '_selectPannel_getButtons', array( 'mybusiness', 1 ) ) ) {
 			if ( $buttons= $this->getResult( 'buttons' ) ) {
-				foreach($buttons as $button) $document->button( $button );
+				foreach($buttons as $button) {
+					$action= json_encode( array( '_action' => $button['action'], '_target' => $button['target'] ) );
+					$button['onclick']= "pos_submit($action);";
+					$document->button( $button );
+				}
 				$buttons->close();
 			}
 		}

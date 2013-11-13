@@ -4,17 +4,25 @@ set @catalog= 'default';
 set @vat= 'general';
 set @mainGroup= 'main';
 set @item= 1;
+set @workDay= '2013/01/01';
 
-insert into business ( business ) values ( @business );
-
-insert into pos ( business, pos, defaultCatalog )	values 
-	( @business, @pos, @catalog )
-;
-insert into selectPannel ( business, pos ) select business, pos from pos; 
+insert into business ( business, currentWorkDay ) values ( @business, @workDay );
 
 insert into catalog( business, catalog, mainItemGroup ) values
 	( @business, @catalog, @mainGroup )
 ;
+insert into workDay ( business, workDay, opening, openUser, openPos ) values ( @business, @workDay, @workDay, 'anonymous', @pos );
+
+insert into pos ( business, pos, defaultCatalog, currentTurn, status ) values 
+	( @business, @pos, @catalog, 1, 'opened' )
+;
+
+insert into turn (business, pos, workDay, turn, catalog, opening, openUser)
+	values ( @business, @pos, @workDay, 1, @catalog, @workDay, 'anonymous')
+;
+
+insert into selectPannel ( business, pos ) select business, pos from pos; 
+
 
 insert into item ( business, item, type, description ) values
 	( @business, @mainGroup, 'group', 'Main' )

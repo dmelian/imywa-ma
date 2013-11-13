@@ -22,6 +22,7 @@ create procedure _turn_check(
 
 	select business.currentWorkDay, pos.currentTurn into _workDay, _turn
 		from business inner join pos on business.business = pos.business
+		where pos.pos = ipos
 	;
 
 	

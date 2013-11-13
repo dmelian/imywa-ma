@@ -16,17 +16,17 @@ class pos_document extends ma_object{
 	
 	public function button( $button ){
 		
-		if ( !isset( $button['action'] ) ) $button['action']= $button['id'];
 		$content= $button['caption'];
 
 		/* Borja's Content
 		<label style="position: absolute;top: 0px;left: 50%;">  </label>
 		<label>g1</label>
 		*/		
-		
-		$this->buffer[]= "<button class=\"pos-button\" value=\"{$button['id']}\""
-			. "onclick=\"pos_submit('{$button['action']}');\""
+		$test= "<button class=\"pos-button\" value=\"{$button['id']}\""
+			. " onclick=\"" . htmlentities($button['onclick']) . "\""
 			.">$content</button>";
+		$this->log($test);
+		$this->buffer[]= $test;
 		
 	}
 

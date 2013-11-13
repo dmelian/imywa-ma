@@ -52,10 +52,9 @@ create procedure _selectPannel_loadItem(
 
 	insert into selectButton(business, pos, id, caption, buttonOrder)
 		select ibusiness, ipos, item.item, item.description, item.itemOrder
-		from item inner join price on item.business = price.business and item.item = price.item
-		where item.business = ibusiness 
-			and item.itemGroup = igroup
-			and price.catalog= _catalog
+		from item left join price on item.business = price.business and item.item = price.item
+		where item.business = ibusiness and item.itemGroup = igroup
+			and ( item.type = 'group' or price.catalog= _catalog  )
 	;
 	
 	call _selectPannel_orderButtons( ibusiness, ipos );
@@ -119,10 +118,12 @@ create procedure _selectPannel_getButtons(
 	if not @errorNo is null then leave _selectPannel_getButtons; end if;
 
 	select 'buttons' as resultId, 
-		button.id, button.caption, button.amount, button.quantity, button.secondCaption
+		button.id, button.caption, button.amount, button.quantity, button.secondCaption,
+			'selectItem' as action, button.id as target
 		
 		from selectPannel as pannel inner join selectButton as button 
 			on pannel.business = button.business and pannel.pos = button.pos
+			
 		where pannel.business = ibusiness and pannel.pos = ipos
 			and ( button.buttonOrder div pannel.pageWidth = pannel.currentPage 
 				or button.bound
