@@ -9,4 +9,15 @@ class pos_application extends ma_sys_application{
 	public $mainDb= 'mybusiness';
 	public $dbTextId= 'pos_dberror';
 	
+	public $business, $pos;
+	
+	public function OnLoad(){
+		$this->business= 'mybusiness';
+		$this->pos= 1;
+		
+		if ( !$this->call( 'pos_openSession', array($this->business, $this->pos) ) ){
+			$this->startForm= 'pos_dialog_forceOpen';
+		}
+	}
+	
 }

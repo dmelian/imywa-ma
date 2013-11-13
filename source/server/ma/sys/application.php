@@ -1,6 +1,6 @@
 <?php
 
-class ma_sys_application extends ma_object{
+class ma_sys_application extends ma_sql_object{
 	
 	/* Application attributes that derived clases must define
 	public $mediaType
@@ -30,6 +30,8 @@ class ma_sys_application extends ma_object{
 	}
 	
 	public function initialize(){
+		
+		if ( method_exists( $this, 'OnLoad' ) ) $this->OnLoad();
 		
 		$formClass= $this->startForm;
 		$form= new $formClass();
