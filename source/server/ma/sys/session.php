@@ -195,7 +195,7 @@ class ma_sys_session extends ma_object {
 			}
 		}
 		
-		if ( isset($this->request['action']) ){
+		if ( !isset($this->request['action']) ){
 			$action= substr($_SERVER['SCRIPT_NAME']
 					, strrpos( $_SERVER['SCRIPT_NAME'], '/' ) + 1
 					, strrpos( $_SERVER['SCRIPT_NAME'], '.' ) - strlen( $_SERVER['SCRIPT_NAME'] ) );

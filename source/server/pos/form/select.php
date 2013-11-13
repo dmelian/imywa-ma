@@ -19,5 +19,13 @@ class pos_form_select extends pos_form{
 		
 		
 	}
+	
+	public function OnAction($action, $source, $target, $options){
+		
+		foreach ($this->pannel as $pannel) {
+			if ( method_exists($pannel, 'OnAction') ) $pannel->OnAction($action, $source, $target, $options);
+		}
+		
+	}
 }
 	

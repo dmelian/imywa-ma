@@ -22,11 +22,10 @@ class pos_document extends ma_object{
 		<label style="position: absolute;top: 0px;left: 50%;">  </label>
 		<label>g1</label>
 		*/		
-		$test= "<button class=\"pos-button\" value=\"{$button['id']}\""
+		
+		$this->buffer[]= "<button class=\"pos-button\" value=\"{$button['id']}\""
 			. " onclick=\"" . htmlentities($button['onclick']) . "\""
 			.">$content</button>";
-		$this->log($test);
-		$this->buffer[]= $test;
 		
 	}
 

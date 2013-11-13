@@ -10,7 +10,7 @@ class pos_form extends ma_object {
 	}
 	
 	public function executeAction($action, $source, $target, $options, $response){
-		if ( method_exists($this, 'OnAction') ) $this->OnAction($action, $options);
+		if ( method_exists($this, 'OnAction') ) $this->OnAction($action, $source, $target, $options);
 	}
 	
 }
