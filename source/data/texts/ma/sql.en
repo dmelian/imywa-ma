@@ -1,9 +1,9 @@
+[error]
 
-[connection]
-
-mysqliError		The mysqli database access library is not installed.
-unknownHost		The host "$_host" has no response.
-accessDenied	Access denied to user "$_user".
-unknownDatabase	The database $_database is not found.
-dbGenericError	Database error "$_errno": "$_errmsg"
+ESQL00		The mysqli database access library is not installed.
+ESQL01		The host "$_host" has no response.
+ESQL02		Access denied to user "$_user".
+ESQL03		The database $_database is not found.
+ESQL04		Database error "$_errno": "$_errmsg".
+ESQL05		Another transaction has already begun.
 

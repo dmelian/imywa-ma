@@ -19,4 +19,13 @@ class ma_sql_object extends ma_object{
 		return $_MANAGER->currConnection->getResult($resultId);
 	}
 	
+	protected function beginTransaction(){
+		global $_MANAGER;
+		return $_MANAGER->currConnection->beginTransaction();
+	}
+	
+	protected function endTransaction(){
+		global $_MANAGER;
+		return $_MANAGER->currConnection->endTransaction();
+	}
 }

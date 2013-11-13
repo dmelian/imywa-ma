@@ -14,8 +14,8 @@ create procedure pos_openSession(
 
 	if not @errorNo is null then leave pos_openSession; end if;
 
-	update pos set currentSession= '@sessionId'
-		-- where business = ibusiness and pos = ipos
+	update pos set currentSession= @sessionId
+		where business = ibusiness and pos = ipos
 	;
 
 

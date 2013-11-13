@@ -22,8 +22,8 @@ class ma_sql_connection extends ma_object{
 		$this->config= array( 'host' => $host, 'database' => $database, 'user' => $user, 'textId' => $textId );
 		$this->conn= mysqli_init();
 		if (!$this->conn){ 
-			$this->ErrorNo= 'ESYS'; 
-			$this->errorMessage= $this->caption('mysqliError'); 
+			$this->ErrorNo= 'ESQL00'; 
+			$this->errorMessage= $this->caption("ma_sql_error_{$this->errorNo}"); 
 			return; 
 		}
 		if ($this->conn->real_connect( $host, $user, $password, $database ) ) {
@@ -36,16 +36,15 @@ class ma_sql_connection extends ma_object{
 	}
 
 	protected function setError(){
-		$this->errorNo= "ME-{$this->conn->errno}";
 		switch($this->conn->errno){
-			case 2005:	$errorId= 'unknownHost'; break; // connect_errno: 2005 - Unknown MySQL server host ...
+			case 2005:	$this->errorNo= 'ESQL01'; break; // connect_errno: 2005 - Unknown MySQL server host ...
 			case 1044: 
-			case 1045:	$errorId= 'accessDenied'; break; // connect_errno: 1044 y 1045 - Access denied for user ...
-			case 1049:	$errorId= 'unknownDatabase'; break; // connect_errno: 1049 - User authenticated but database not found ...
-			default: 	$errorId= 'dbGenericError'; //Any other error
+			case 1045:	$this->errorNo= 'ESQL02'; break; // connect_errno: 1044 y 1045 - Access denied for user ...
+			case 1049:	$this->errorNo= 'ESQL03'; break; // connect_errno: 1049 - User authenticated but database not found ...
+			default: 	$this->errorNo= 'ESQL04'; //Any other error
 		}
 		$params= array_merge( $this->config, array( 'errno' => $this->conn->errno, 'errmsg' => $this->conn->error) );
-		$this->errorMessage= $this->caption( $errorId, $params );
+		$this->errorMessage= $this->caption( "ma_sql_error_{$this->errorNo}", $params, false );
 		
 	}
 	
@@ -76,7 +75,18 @@ class ma_sql_connection extends ma_object{
 		}
 	}
 
-	protected function finishTransaction(){
+	public function beginTransaction(){
+		if ($this->closed) return;
+		if ($this->unfinishedTransaction) {
+			$this->errorNo = 'ESQL05';
+			$this->errorMessage= $this->caption( "ma_sql_error_{$this->errorNo}" );
+			$this->success= false;
+			$this->close();
+		} else $this->unfinishedTransaction= true;
+		return $this->unfinishedTransaction;
+	}
+	
+	public function endTransaction(){
 		if ($this->closed) return;
 		if ($this->unfinishedTransaction){
 			if ($this->success) $this->commit();
@@ -87,7 +97,7 @@ class ma_sql_connection extends ma_object{
 	
 	public function close(){
 		if ($this->closed) return;
-		$this->finishTransaction();
+		$this->endTransaction();
 		$this->conn->close();
 		$this->closed= true;
 	}
@@ -101,14 +111,12 @@ class ma_sql_connection extends ma_object{
 		if ( $this->closed ) return;
 		$this->closeResults();
 		
-		if ( $this->success ){
+		if ( !$this->unfinishedTransaction || $this->success ){
 			if( !$this->conn->real_query( 'set @errorno= null, @sessionId= "' . $this->getSessionId() . '";' ) ); //TODO: log this error.
 			$query= "call $procedure" . $this->expand( $params );
 			$this->log("PROC> {$this->config['host']}:{$this->config['database']}:{$this->config['user']} $query", 'sql');
 			$this->success= $this->conn->real_query( $query );
 			if ( $this->success ){
-				$this->unfinishedTransaction= true;
-				
 				// retrieve the posible results.
 				unset( $this->results ); $this->results= array();
 				while ( $this->conn->more_results() ){
@@ -143,26 +151,32 @@ class ma_sql_connection extends ma_object{
 					);
 					$this->logError('APP-ERROR', $query);
 				}
+				
+				if ( !$this->unfinishedTransaction ) {
+					if ( $this->success ) $this->conn->commit(); else $this->conn->rollback();
+				}
 
 			} else {
 				// Manage mysql errors.
 				
 				$this->setError();
 				$this->logError('SQL-ERROR', $query);
+				
+				if ( !$this->unfinishedTransaction ) $this->conn->rollback();
 			}
 		}
 		return $this->success; 
 	}
 
 	
-	public function query($query){
+/*	public function query($query){
 		global $_SESSION;
 		global $_LOG;
 		
 		if ($this->closed) return;
 		$this->closeResults();
 		
-		$sucess=false;
+		$success=false;
 		if ($this->success){
 			$success= $this->conn->real_query($query);
 			if ($success){
@@ -178,7 +192,7 @@ class ma_sql_connection extends ma_object{
 		}
 		return $success; 
 	}
-	
+*/
 	
 	public function getResult($resultId){
 		if (isset($this->resultIds[$resultId])) return $this->results[$this->resultIds[$resultId]]; 
