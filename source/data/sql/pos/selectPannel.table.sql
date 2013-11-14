@@ -5,7 +5,7 @@ select @currFile as file, 'TABLE selectPannel' as command;
 create table if not exists selectPannel(
 	business varchar(10) not null,
 	pos integer not null,
-	currentGroup varchar(20),
+	currentGroup varchar(10),
 	currentPage integer default 0,
 	pageWidth integer,
 	dimLeft float, dimTop float,
@@ -18,7 +18,7 @@ create table if not exists selectButton(
 	business varchar(10) not null,
 	pos integer not null,
 	id varchar(20) not null,
-	type enum('itemGroup', 'item', 'pannelAction'),
+	type enum('group', 'item', 'pannelAction'),
 	caption varchar(30),
 	bound bool default false,
 	buttonOrder integer,

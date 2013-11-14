@@ -37,33 +37,29 @@ create procedure _selectPannel_loadItem(
 
 	declare _workDay date;
 	declare _turn integer;
-	declare _catalog varchar(10);
+	declare _firstItemOrder integer;
 
 	if not @errorNo is null then leave _selectPannel_loadItem; end if;
 
 	call _turn_check( ibusiness, ipos, _workDay, _turn );	
 	if not @errorNo is null then leave _selectPannel_loadItem; end if;
 
-	select catalog into _catalog from turn 
-		where business = ibusiness and pos = ipos and workDay = _workDay and turn = _turn
-	;
-
 	delete from selectButton where business = ibusiness and pos = ipos;
 
 	insert into selectButton(business, pos, id, type, caption, buttonOrder)
-		select ibusiness, ipos, item.item, 'item', item.description, item.itemOrder
-		from item inner join price on item.business = price.business and item.item = price.item
-		where item.business = ibusiness
-			and item.itemGroup = igroup
-			and price.catalog = _catalog
-			and item.type = 'item'
+		select ibusiness, ipos, itemGroup, 'group', description, groupOrder
+			from itemGroup where business = ibusiness and parentGroup = igroup
 	;
 	
+	select max(buttonOrder) + 1 into _firstItemOrder 
+		from selectButton where business = ibusiness and pos = ipos
+	;
+	if _firstItemOrder is null then set _firstItemOrder= 1; end if;
+	
 	insert into selectButton(business, pos, id, type, caption, buttonOrder)
-		select ibusiness, ipos, item.item, 'itemGroup', item.description, item.itemOrder
-		from item left join price on item.business = price.business and item.item = price.item
-		where item.business = ibusiness and item.itemGroup = igroup
-			and ( item.type = 'group' or price.catalog= _catalog  )
+		select ibusiness, ipos, groupItems.item, 'item', item.description, groupItems.itemOrder + _firstItemOrder
+		from groupItems inner join item on groupItems.business = item.business and groupItems.item = item.item
+		where groupItems.business = ibusiness and groupItems.itemGroup = igroup
 	;
 	
 	call _selectPannel_orderButtons( ibusiness, ipos );
@@ -137,6 +133,8 @@ create procedure _selectPannel_getButtons(
 			and ( button.buttonOrder div pannel.pageWidth = pannel.currentPage 
 				or button.bound
 			)
+			
+		order by buttonOrder
 	;
 
 
@@ -154,8 +152,31 @@ create procedure _selectPannel_select(
 
 ) _selectPannel_select: begin
 
+	declare _type enum( 'group', 'item', 'pannelAction' );
+	declare _id varchar(20);
+	
 	if not @errorNo is null then leave _selectPannel_select; end if;
-
+	
+	select id, type into _id, _type from selectButton
+		where business = ibusiness and pos = ipos and id = iid
+	;
+	
+	case _type 
+		when 'group' then
+			call _selectPannel_loadItem( ibusiness, ipos, _id ); 
+			if not @errorNo is null then leave _selectPannel_select; end if;
+		
+		when 'item' then
+			select mainGroup into _id from pos where business = ibusiness and pos = ipos;
+			call _selectPannel_loadItem( ibusiness, ipos, _id ); 
+			if not @errorNo is null then leave _selectPannel_select; end if;
+		
+--		when 'pannelAction' then
+			-- TODO PREVIOUS PAGE NEXT PAGE		
+			
+--		else
+	
+	end case;
 	
 
 end _selectPannel_select$$
