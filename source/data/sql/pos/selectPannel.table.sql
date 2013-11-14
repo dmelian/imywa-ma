@@ -18,6 +18,7 @@ create table if not exists selectButton(
 	business varchar(10) not null,
 	pos integer not null,
 	id varchar(20) not null,
+	type enum('itemGroup', 'item', 'pannelAction'),
 	caption varchar(30),
 	bound bool default false,
 	buttonOrder integer,

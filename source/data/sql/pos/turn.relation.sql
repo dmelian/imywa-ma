@@ -13,8 +13,5 @@ alter table turn add
 		on delete restrict on update cascade;
 
 
-alter table turn add
-	foreign key (business, catalog) references catalog ( business, catalog )
-		on delete restrict on update cascade;
 
 

@@ -2,9 +2,6 @@ set @fileCount= @fileCount + 1;
 set @currFile= concat_ws(' - ', @fileCount, 'ITEM.RELATION.SQL');
 
 select @currFile as file, 'RELATIONS OF TABLE item' as command;
-alter table item add 
-	foreign key ( business, itemGroup ) references item ( business, item ) 
-		on delete cascade on update cascade;
 
 alter table item add 
 	foreign key ( business ) references business ( business ) 

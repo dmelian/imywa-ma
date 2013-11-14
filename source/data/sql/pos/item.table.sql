@@ -7,14 +7,10 @@ create table if not exists item(
 	
 	business varchar(10) not null,
 	item varchar(20) not null,
-	type enum( 'group', 'item' ),
-	itemGroup varchar(20),
-	itemOrder integer,
 	description varchar(30),
 	VATType varchar(10),
 
-	primary key ( business, item ),
-	index (business, itemGroup, type, item )
+	primary key ( business, item )
 ) engine InnoDB, default character set utf8;
 
 

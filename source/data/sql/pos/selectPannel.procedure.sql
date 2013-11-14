@@ -50,8 +50,17 @@ create procedure _selectPannel_loadItem(
 
 	delete from selectButton where business = ibusiness and pos = ipos;
 
-	insert into selectButton(business, pos, id, caption, buttonOrder)
-		select ibusiness, ipos, item.item, item.description, item.itemOrder
+	insert into selectButton(business, pos, id, type, caption, buttonOrder)
+		select ibusiness, ipos, item.item, 'item', item.description, item.itemOrder
+		from item inner join price on item.business = price.business and item.item = price.item
+		where item.business = ibusiness
+			and item.itemGroup = igroup
+			and price.catalog = _catalog
+			and item.type = 'item'
+	;
+	
+	insert into selectButton(business, pos, id, type, caption, buttonOrder)
+		select ibusiness, ipos, item.item, 'itemGroup', item.description, item.itemOrder
 		from item left join price on item.business = price.business and item.item = price.item
 		where item.business = ibusiness and item.itemGroup = igroup
 			and ( item.type = 'group' or price.catalog= _catalog  )
@@ -133,6 +142,24 @@ create procedure _selectPannel_getButtons(
 
 
 end _selectPannel_getButtons$$
+
+
+select @currFile as file, 'PROCEDURE _selectPannel_select ( business, pos, id )' as command$$
+drop procedure if exists _selectPannel_select$$
+create procedure _selectPannel_select(
+
+	ibusiness varchar(10),
+	ipos integer,
+	iid varchar(20)
+
+) _selectPannel_select: begin
+
+	if not @errorNo is null then leave _selectPannel_select; end if;
+
+	
+
+end _selectPannel_select$$
+
 
 
 delimiter ;

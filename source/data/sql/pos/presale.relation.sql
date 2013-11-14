@@ -31,11 +31,6 @@ alter table presaleLine add
 		on delete restrict on update cascade;
 
 alter table presaleLine add
-	foreign key ( business, item ) references item ( business, item ) 
-		on delete restrict on update cascade;
-
-
-alter table presaleLine add
-	foreign key ( business, catalog ) references catalog ( business, catalog ) 
+	foreign key ( business, tariff, item ) references price ( business, tariff, item ) 
 		on delete restrict on update cascade;
 
