@@ -8,6 +8,8 @@ create table if not exists selectPannel(
 	currentGroup varchar(10),
 	currentPage integer default 0,
 	pageWidth integer,
+	viewWidth integer,
+	pageCount integer,
 	dimLeft float, dimTop float,
 	dimWidth float, dimHeight float,
 	primary key ( business, pos )

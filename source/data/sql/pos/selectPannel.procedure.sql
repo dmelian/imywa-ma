@@ -37,7 +37,11 @@ create procedure _selectPannel_loadItem(
 
 	declare _workDay date;
 	declare _turn integer;
-	declare _firstItemOrder integer;
+	declare _maxOrder integer;
+	declare _buttonCount integer;
+	declare _pageWidth integer;
+	declare _pageCount integer;
+
 
 	if not @errorNo is null then leave _selectPannel_loadItem; end if;
 
@@ -51,30 +55,39 @@ create procedure _selectPannel_loadItem(
 			from itemGroup where business = ibusiness and parentGroup = igroup
 	;
 	
-	select max(buttonOrder) + 1 into _firstItemOrder 
+	select max(buttonOrder) + 1 into _maxOrder 
 		from selectButton where business = ibusiness and pos = ipos
 	;
-	if _firstItemOrder is null then set _firstItemOrder= 1; end if;
+	if _maxOrder is null then set _maxOrder= 1; end if;
 	
 	insert into selectButton(business, pos, id, type, caption, buttonOrder)
-		select ibusiness, ipos, groupItems.item, 'item', item.description, groupItems.itemOrder + _firstItemOrder
+		select ibusiness, ipos, groupItems.item, 'item', item.description, groupItems.itemOrder + _maxOrder
 		from groupItems inner join item on groupItems.business = item.business and groupItems.item = item.item
 		where groupItems.business = ibusiness and groupItems.itemGroup = igroup
 	;
 	
-	call _selectPannel_orderButtons( ibusiness, ipos );
+	call _selectPannel_arrangeButtons( ibusiness, ipos );
 	if not @errorNo is null then leave _selectPannel_loadItem; end if;
+	
 
 end _selectPannel_loadItem$$
 
-select @currFile as file, 'PROCEDURE _selectPannel_orderButtons ( business, pos )' as command$$
-drop procedure if exists _selectPannel_orderButtons$$
-create procedure _selectPannel_orderButtons(
+select @currFile as file, 'PROCEDURE _selectPannel_arrangeButtons ( business, pos )' as command$$
+drop procedure if exists _selectPannel_arrangeButtons$$
+create procedure _selectPannel_arrangeButtons(
 
 	in ibusiness varchar(10),
 	in ipos integer
 
-) _selectPannel_orderButtons: begin
+) _selectPannel_arrangeButtons: begin
+	
+	declare _buttonCount integer;
+	declare _pageWidth integer;
+	declare _viewWidth integer;
+	declare _pageCount integer;
+	declare _buttonsToAdd integer;
+	declare _iButton integer;
+	declare _maxOrder integer;
 
 	declare _buttonOrder integer;
 	declare dsid varchar(20);
@@ -84,8 +97,41 @@ create procedure _selectPannel_orderButtons(
 		select id from selectButton where business = ibusiness and pos = ipos order by buttonOrder;
 	declare continue handler for not found set notfound = true;
 
-	if not @errorNo is null then leave _selectPannel_orderButtons; end if;
+	if not @errorNo is null then leave _selectPannel_arrangeButtons; end if;
 
+	-- view Adjust.
+	
+	select count(*) into _buttonCount from selectButton where business = ibusiness and pos = ipos;
+	select pageWidth into _pageWidth from selectPannel where business = ibusiness and pos = ipos;
+	
+	set _viewWidth= if ( _buttonCount <= _pageWidth , _pageWidth , _pageWidth - 2 );
+	set _pageCount= _buttonCount div _viewWidth;
+	
+	set _buttonsToAdd= if ( _buttonCount mod _viewWidth > 0, _viewWidth - ( _buttonCount mod _viewWidth ) , 0 );
+	if _buttonsToAdd > 0 then set _pageCount= _pageCount + 1; end if;
+	
+	update selectPannel
+		set viewWidth= _viewWidth, pageCount= _pageCount, currentPage= 0
+		where business = ibusiness and pos = ipos
+	;
+	
+	-- Nop buttons (disabled buttons).
+
+	select max(buttonOrder) + 1 into _maxOrder 
+		from selectButton where business = ibusiness and pos = ipos
+	;
+	if _maxOrder is null then set _maxOrder= 1; end if;
+	
+	set _iButton= 0;
+	while _iButton < _buttonsToAdd do
+		insert into selectButton (business, pos, id, type, caption, buttonOrder)
+			values (ibusiness, ipos, concat('NOP', _iButton), 'nop', ' -- ', _maxOrder + _iButton)
+		;
+		set _iButton= _iButton + 1;
+	end while;
+
+	-- Reorder.
+	
 	set _buttonOrder= 0;
 
 	open ds;
@@ -106,7 +152,17 @@ create procedure _selectPannel_orderButtons(
 	until endds end repeat;
 	close ds;	
 
-end _selectPannel_orderButtons$$
+	-- pannelAction buttons.
+	
+	if _pageCount > 1 then
+		insert into selectButton (business, pos, id, type, caption, buttonOrder, bound)
+			values (ibusiness, ipos, 'PREVIOUSPAGE', 'pannelAction', 'PREVIOUS', -1, true)
+			, (ibusiness, ipos, 'NEXTPAGE', 'pannelAction', 'NEXT', 9999, true)
+		;
+	end if;
+	
+	
+end _selectPannel_arrangeButtons$$
 
 
 
@@ -130,7 +186,7 @@ create procedure _selectPannel_getButtons(
 			on pannel.business = button.business and pannel.pos = button.pos
 			
 		where pannel.business = ibusiness and pannel.pos = ipos
-			and ( button.buttonOrder div pannel.pageWidth = pannel.currentPage 
+			and ( button.buttonOrder div pannel.viewWidth = pannel.currentPage 
 				or button.bound
 			)
 			
@@ -171,8 +227,21 @@ create procedure _selectPannel_select(
 			call _selectPannel_loadItem( ibusiness, ipos, _id ); 
 			if not @errorNo is null then leave _selectPannel_select; end if;
 		
---		when 'pannelAction' then
-			-- TODO PREVIOUS PAGE NEXT PAGE		
+		when 'pannelAction' then
+			case _id
+				when 'PREVIOUSPAGE' then
+					update selectPannel
+						set currentPage= if ( currentPage > 0, currentPage - 1, pageCount - 1 )
+						where business = ibusiness and pos = ipos
+					;
+						
+				when 'NEXTPAGE' then
+					update selectPannel
+						set currentPage= if ( CurrentPage < pageCount - 1, currentPage + 1, 0 )
+						where business = ibusiness and pos = ipos
+					;
+					
+			end case;
 			
 --		else
 	
