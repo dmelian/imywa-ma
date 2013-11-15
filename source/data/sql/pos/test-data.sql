@@ -21,6 +21,7 @@ insert into turn (business, pos, workDay, turn, opening, openUser)
 	values ( @business, @pos, @workDay, 1, @workDay, 'anonymous')
 ;
 
+
 insert into selectPannel ( business, pos ) select business, pos from pos; 
 
 
@@ -211,3 +212,5 @@ select 'PRICE';
 insert into price ( business, tariff, item, price )
 	select @business, @tariff, item, item * 0.1 from item;
 
+
+call _presale_new( @business, @pos , @presale);

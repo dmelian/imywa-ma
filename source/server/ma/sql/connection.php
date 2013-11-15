@@ -106,13 +106,21 @@ class ma_sql_connection extends ma_object{
 		$this->close();
 	}
 	
+	private function getGlobalVarsSetQuery(){
+		$sentence= '';
+		foreach ($this->getGlobals() as $global => $value){
+			$sentence.= ", @$global='$value'";
+		}
+		return "set @errorno= null$sentence;";
+	}
+	
 	public function call($procedure, $params=array()){
 		
 		if ( $this->closed ) return;
 		$this->closeResults();
 		
 		if ( !$this->unfinishedTransaction || $this->success ){
-			if( !$this->conn->real_query( 'set @errorno= null, @sessionId= "' . $this->getSessionId() . '";' ) ); //TODO: log this error.
+			if( !$this->conn->real_query( $this->getGlobalVarsSetQuery() ) ); //TODO: log this error.
 			$query= "call $procedure" . $this->expand( $params );
 			$this->log("PROC> {$this->config['host']}:{$this->config['database']}:{$this->config['user']} $query", 'sql');
 			$this->success= $this->conn->real_query( $query );

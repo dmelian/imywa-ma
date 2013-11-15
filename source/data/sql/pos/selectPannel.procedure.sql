@@ -223,7 +223,8 @@ create procedure _selectPannel_select(
 			if not @errorNo is null then leave _selectPannel_select; end if;
 		
 		when 'item' then
-			-- call _presale_select(ibusiness, ipos, presale?, _id, qty?);
+			call pos_selectItem(ibusiness, ipos, _id );
+			if not @errorNo is null then leave _selectPannel_select; end if;
 			select mainGroup into _id from pos where business = ibusiness and pos = ipos;
 			call _selectPannel_loadItem( ibusiness, ipos, _id ); 
 			if not @errorNo is null then leave _selectPannel_select; end if;

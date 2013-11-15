@@ -81,14 +81,9 @@ class ma_object{
 	
 // UIDS
 
-	protected function newUId(){
-		global $_MANAGER;
-		return $_MANAGER->currentSession->newUId();
-	}
+	protected function newUId(){ global $_MANAGER; return $_MANAGER->currentSession->newUId(); }
 
-	protected function getSessionId(){
-		global $_MANAGER;
-		return $_MANAGER->currentSession->getSessionId();
-	}	
-		
+	public function setGlobal($key, $value){ global $_MANAGER; $_MANAGER->setGlobal($key, $value); }
+	public function getGlobal($key){ global $_MANAGER; $_MANAGER->getGlobal($key); }
+	protected function getGlobals(){ global $_MANAGER; return $_MANAGER->currentSession->getGlobals(); }
 }

@@ -29,12 +29,4 @@ source business.relation.sql
 source workday.relation.sql
 source tariff.relation.sql
 
-source serialno.procedure.sql
-source presale.procedure.sql
-source turn.procedure.sql 
-source sale.procedure.sql
-source item.procedure.sql
-source selectPannel.procedure.sql
-source pos.procedure.sql
-source business.procedure.sql
-
+source create.procedure.sql

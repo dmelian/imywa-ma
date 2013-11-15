@@ -31,11 +31,11 @@ create procedure _presale_new(
 	end if;
 
 	insert into presale ( business, pos, workDay, turn, presale, state ) 
-		values ( _business, _pos, _workDay, _turn, _presale, 'draft' )
+		values ( ibusiness, ipos, _workDay, _turn, _presale, 'draft' )
 	;
 
 	insert into presaleVersion (  business, pos, workDay, turn, presale, version, creationTime, action ) 
-		values ( _business, _pos, _workDay, _turn, _presale, 1, now(), 'new' )
+		values ( ibusiness, ipos, _workDay, _turn, _presale, 1, now(), 'new' )
 	;
 	
 	set opresale= _presale;
@@ -77,7 +77,7 @@ create procedure _presale_bill(
 	end if;
 	if _state <> 'draft' or _state <> 'revising' then
 		set @errorno= 'E031';
-		select 'ma_error' as resultId, @errorno as errorNo, ibusiness as business, ipos as pos, _workDay as workDay, _turn as turn, ipresale as presale, _status as status;
+		select 'ma_error' as resultId, @errorno as errorNo, ibusiness as business, ipos as pos, _workDay as workDay, _turn as turn, ipresale as presale, _state as state;
 		leave _presale_bill;
 	end if;
 
@@ -172,7 +172,7 @@ create procedure _presale_charge(
 	end if;
 	if _state <> 'billed' then
 		set @errorno= 'E032';
-		select 'ma_error' as resultId, @errorno as errorNo, ibusiness as business, ipos as pos, _workDay as workDay, _turn as turn, ipresale as presale, _status as status;
+		select 'ma_error' as resultId, @errorno as errorNo, ibusiness as business, ipos as pos, _workDay as workDay, _turn as turn, ipresale as presale, _state as state;
 		leave _presale_charge;
 	end if;
 
@@ -236,7 +236,7 @@ create procedure _presale_select(
 	in ibusiness varchar(10),	
 	in ipos integer,
 	in ipresale integer,
-	in item varchar(20),
+	in iitem varchar(20),
 	in iqty float
 
 ) _presale_select: begin
@@ -247,6 +247,7 @@ create procedure _presale_select(
 	declare _presale integer;
 	declare _lineNo integer;
 	declare _version integer;
+	declare _tariff varchar(10);
 	declare _price double;
 
 
@@ -265,9 +266,9 @@ create procedure _presale_select(
 		select 'ma_error' as resultId, @errorno as errorNo, ibusiness as business, ipos as pos, _workDay as workDay, _turn as turn, ipresale as presale;
 		leave _presale_select;
 	end if;
-	if _state <> 'draft' or _state <> 'revising' then
+	if _state <> 'draft' and _state <> 'revising' then
 		set @errorno= 'E031';
-		select 'ma_error' as resultId, @errorno as errorNo, ibusiness as business, ipos as pos, _workDay as workDay, _turn as turn, ipresale as presale, _status as status;
+		select 'ma_error' as resultId, @errorno as errorNo, ibusiness as business, ipos as pos, _workDay as workDay, _turn as turn, ipresale as presale, _state as state;
 		leave _presale_select;
 	end if;
 
@@ -277,7 +278,7 @@ create procedure _presale_select(
 	;
 
 	-- Group lines by item (or not)
-	select lineNo into _lineNo 
+/*	select lineNo into _lineNo 
 		from presaleLine
 		where business = ibusiness and pos = ipos and workDay = _workDay and turn = _turn and presale = _presale
 			and version = _version and item = iitem;
@@ -288,7 +289,7 @@ create procedure _presale_select(
 			where business = ibusiness and pos = ipos and workDay = _workDay and turn = _turn and presale = _presale
 				and lineNo = _lineNo
 		;
-
+*/
 	if _lineNo is null then 
 
 		select max(lineNo) into _lineNo from presaleLine 
@@ -298,13 +299,14 @@ create procedure _presale_select(
 		else set _lineNo = _lineNo + 1;
 		end if;
 
-		select price into _price 
-			from item
-			where business = ibusiness and item = iitem
+		select defaultTariff into _tariff from pos where business = ibusiness and pos = ipos;
+		
+		select price into _price from price
+			where price.business = ibusiness and price.tariff = _tariff and price.item = iitem
 		; -- TODO: Check the price first for another line in the ticket and second from the item table.
 
-		insert into presaleLine ( business, pos, workDay, turn, presale, version, lineNo, creationTime, item, quantity, price, listPrice )
-			values ( iworkday, ipos, _workDay, _turn, _presale, _version, _lineNo, now(), iitem, iqty, iprice, iprice );
+		insert into presaleLine ( business, pos, workDay, turn, presale, version, lineNo, creationTime, tariff, item, quantity, price )
+			values ( ibusiness, ipos, _workDay, _turn, _presale, _version, _lineNo, now(), _tariff, iitem, iqty, _price );
 
 	end if;
 		

@@ -12,6 +12,7 @@ class ma_sys_application extends ma_sql_object{
 	*/
 	protected $currentForm;
 	protected $breadCrumb= array();
+	protected $globals= array();
 	
 	private $appDir;
 	private $stackTop= 0;
@@ -28,6 +29,11 @@ class ma_sys_application extends ma_sql_object{
 		//TODO Load the Start form. ??
 		
 	}
+	
+	
+	public function setGlobal($key, $value){ $this->globals[$key]= $value; }
+	public function getGlobal($key) { return $this->globals[$key]; } 
+	public function getGlobals(){ return $this->globals; }
 	
 	public function initialize(){
 		

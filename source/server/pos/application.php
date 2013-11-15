@@ -20,4 +20,8 @@ class pos_application extends ma_sys_application{
 		}
 	}
 	
+	public function getGlobals(){
+		return array('business'=>'mybusiness', 'pos'=>1);
+	}
+	
 }
