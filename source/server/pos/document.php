@@ -23,7 +23,7 @@ class pos_document extends ma_object{
 		<label>g1</label>
 		*/		
 		
-		$this->buffer[]= "<button class=\"pos-button\" value=\"{$button['id']}\""
+		$this->buffer[]= "<button class=\"{$button['class']}\" value=\"{$button['id']}\""
 			. " onclick=\"" . htmlentities($button['onclick']) . "\""
 			.">$content</button>";
 		

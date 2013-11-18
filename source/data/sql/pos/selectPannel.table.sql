@@ -20,14 +20,14 @@ create table if not exists selectButton(
 	business varchar(10) not null,
 	pos integer not null,
 	id varchar(20) not null,
-	type enum('group', 'item', 'pannelAction'),
+	action enum('group', 'item', 'pannelAction', 'nop'),
 	caption varchar(30),
 	bound bool default false,
 	buttonOrder integer,
 	amount double,
 	quantity integer,
 	secondCaption varchar(30),
-	classes varchar(80),
+	class varchar(80),
 
 	primary key ( business, pos, id ),
 	index ( business, pos, buttonOrder )

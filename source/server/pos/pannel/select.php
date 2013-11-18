@@ -11,6 +11,7 @@ class pos_pannel_select extends pos_pannel{
 	}
 
 	public function OnLoad(){
+		$this->class[]= 'pnl-select';
 		$this->UId= $this->newUId();
 		$this->call( '_selectPannel_init', array( 'mybusiness', 1, $this->rowCount * $this->colCount ) );
 		$this->call( '_selectPannel_loadItem', array( 'mybusiness', 1, 'main' ) );
@@ -27,7 +28,8 @@ class pos_pannel_select extends pos_pannel{
 						, '_source' => $this->UId
 						)
 					);
-					$button['onclick']= "pos_submit($action);";
+					//TODO: CHANGE TYPE TO ACTION.
+					if ( $button['action'] != 'nop' ) $button['onclick']= "pos_submit($action);";
 					$document->button( $button );
 				}
 				$buttons->close();
@@ -40,7 +42,7 @@ class pos_pannel_select extends pos_pannel{
 		if ($source == $this->UId) {
 			switch ($action){
 				
-			case 'selectItem':
+			case 'group': case 'item': case 'pannelAction';
 					//$this->call( get_called_class() . "_$action", prepare_params(sessionVars, target, options));
 					$this->call('_selectPannel_select', array('mybusiness', 1, $target));
 				break;

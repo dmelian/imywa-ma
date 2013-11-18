@@ -1,27 +1,108 @@
+*{
+	margin: 0px;
+}
+
 body{
 	position: relative;
 	margin: 0px;
 	width: 100%;
 	height: 100%;
-}
-
-.pannel{
-	position: absolute;
+	background-color: rgba(140,140,150,1);
 }
 
 .backstage{
 	display: none;
 }
 
-.pos-button {
-	-moz-border-bottom-colors: none;
-	-moz-border-left-colors: none;
-	-moz-border-right-colors: none;
-	-moz-border-top-colors: none;
-	background-color: #0000FF;
-	border-color: -moz-use-text-color;
-	border-image: url("image/posbutton.png") 6 6 6 6 repeat stretch;
-	border-style: solid;
-	border-width: 6px;
-	color: #FFFFFF;
+
+.pannel{
+	position: absolute;
 }
+
+
+.pnl-select{
+	left: 0px; top: 100px; right:200px; bottom:0px;
+	background-color: rgba(0,0,255,0.05);
+}
+
+.pnl-menu{
+	left: 0px; top: 0px; right:200px; height:100px;
+	background-color: rgba(255,255,0,0.05);
+}
+
+.pnl-display{
+	right: 0px; top: 0px; width:200px; height:100%;
+	background-color: rgba(0,255,0,0.05);
+}
+
+.backstage {
+	display: none;
+}
+
+button {
+	border-width: 2px;
+	border-radius: 6px;
+	margin: 3px;
+	width:100px;
+	height: 60px;
+}
+button.disabled{
+	background-color: rgba(0,0,0,0) !important;
+	border-color: #808080 !important;
+	box-shadow: 3px 3px 6px 0px #000000 !important;
+	color: #a0a0a0 !important;
+}
+
+/*
+Color levels
+low-color: #4040A0 - normal background, active text
+high-color: #C0C0FF - shadow, border, active background.
+*/
+.pnl-select button {
+	background-color: #4040a0;
+	border-color: #c0c0ff;
+	box-shadow: 4px 4px 8px 0px #C0C0FF; 
+	color: white;
+}
+.pnl-select button.active {
+	background-color: #c0c0ff;
+	border-style: inset;
+	box-shadow: 1px 1px 8px 3px #C0C0FF;
+	font-weight: bold;
+	color: #4040a0;
+}
+
+/*
+low-color: a0a000 - luminance 80
+color: ffff01 - limunance 128
+high-color: ffffb9 - luminance 220
+*/
+.pnl-menu button {
+	background-color: #ffff01;
+	border-color: #ffffb9;
+	box-shadow: 4px 4px 8px 0px #ffffb9; 
+	color: black;
+}
+.pnl-menu button.active {
+	background-color: #ffffb9;
+	border-style: inset;
+	box-shadow: 1px 1px 8px 3px #ffffb9;
+	font-weight: bold;
+	color: #a0a000;
+}
+
+.pnl-display button {
+	background-color: #a040a0;
+	border-color: #ff80ff;
+	box-shadow: 4px 4px 8px 0px #ffc0ff; 
+	color: white;
+}
+.pnl-display button.active {
+	background-color: #ffa0ff;
+	border-style: inset;
+	box-shadow: 1px 1px 8px 3px #ffc0ff;
+	font-weight: bold;
+	color: #802080;
+}
+
+

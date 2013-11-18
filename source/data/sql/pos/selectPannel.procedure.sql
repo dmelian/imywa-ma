@@ -50,7 +50,7 @@ create procedure _selectPannel_loadItem(
 
 	delete from selectButton where business = ibusiness and pos = ipos;
 
-	insert into selectButton(business, pos, id, type, caption, buttonOrder)
+	insert into selectButton(business, pos, id, action, caption, buttonOrder)
 		select ibusiness, ipos, itemGroup, 'group', description, groupOrder
 			from itemGroup where business = ibusiness and parentGroup = igroup
 	;
@@ -60,7 +60,7 @@ create procedure _selectPannel_loadItem(
 	;
 	if _maxOrder is null then set _maxOrder= 1; end if;
 	
-	insert into selectButton(business, pos, id, type, caption, buttonOrder)
+	insert into selectButton(business, pos, id, action, caption, buttonOrder)
 		select ibusiness, ipos, groupItems.item, 'item', item.description, groupItems.itemOrder + _maxOrder
 		from groupItems inner join item on groupItems.business = item.business and groupItems.item = item.item
 		where groupItems.business = ibusiness and groupItems.itemGroup = igroup
@@ -124,8 +124,8 @@ create procedure _selectPannel_arrangeButtons(
 	
 	set _iButton= 0;
 	while _iButton < _buttonsToAdd do
-		insert into selectButton (business, pos, id, type, caption, buttonOrder)
-			values (ibusiness, ipos, concat('NOP', _iButton), 'nop', ' -- ', _maxOrder + _iButton)
+		insert into selectButton (business, pos, id, action, caption, class, buttonOrder)
+			values (ibusiness, ipos, concat('NOP', _iButton), 'nop', ' -- ', 'disabled' , _maxOrder + _iButton)
 		;
 		set _iButton= _iButton + 1;
 	end while;
@@ -155,7 +155,7 @@ create procedure _selectPannel_arrangeButtons(
 	-- pannelAction buttons.
 	
 	if _pageCount > 1 then
-		insert into selectButton (business, pos, id, type, caption, buttonOrder, bound)
+		insert into selectButton (business, pos, id, action, caption, buttonOrder, bound)
 			values (ibusiness, ipos, 'PREVIOUSPAGE', 'pannelAction', 'PREVIOUS', -1, true)
 			, (ibusiness, ipos, 'NEXTPAGE', 'pannelAction', 'NEXT', 9999, true)
 		;
@@ -179,8 +179,8 @@ create procedure _selectPannel_getButtons(
 	if not @errorNo is null then leave _selectPannel_getButtons; end if;
 
 	select 'buttons' as resultId, 
-		button.id, button.caption, button.amount, button.quantity, button.secondCaption,
-			'selectItem' as action, button.id as target
+		button.id, button.caption, button.amount, button.quantity, button.secondCaption, button.class,
+			button.action, button.id as target
 		
 		from selectPannel as pannel inner join selectButton as button 
 			on pannel.business = button.business and pannel.pos = button.pos
@@ -208,16 +208,16 @@ create procedure _selectPannel_select(
 
 ) _selectPannel_select: begin
 
-	declare _type enum( 'group', 'item', 'pannelAction' );
+	declare _action enum( 'group', 'item', 'pannelAction', 'nop' );
 	declare _id varchar(20);
 	
 	if not @errorNo is null then leave _selectPannel_select; end if;
 	
-	select id, type into _id, _type from selectButton
+	select id, action into _id, _action from selectButton
 		where business = ibusiness and pos = ipos and id = iid
 	;
 	
-	case _type 
+	case _action 
 		when 'group' then
 			call _selectPannel_loadItem( ibusiness, ipos, _id ); 
 			if not @errorNo is null then leave _selectPannel_select; end if;
