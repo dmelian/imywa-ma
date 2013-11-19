@@ -10,6 +10,7 @@ source turn.table.sql
 source sale.table.sql
 source item.table.sql
 source selectPannel.table.sql
+source menuPannel.table.sql
 source pos.table.sql
 source group.table.sql
 source business.table.sql
@@ -23,6 +24,7 @@ source turn.relation.sql
 source sale.relation.sql
 source item.relation.sql
 source selectPannel.relation.sql
+source menuPannel.relation.sql
 source pos.relation.sql
 source group.relation.sql
 source business.relation.sql
