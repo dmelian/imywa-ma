@@ -40,14 +40,7 @@ class pos_pannel_menu extends pos_pannel{
 	public function OnAction( $action, $source, $target, $options){
 		
 		if ($source == $this->UId) {
-			switch ($action){
-				
-			case 'menuAction':
-				break;
-				
-			default:
-				$this->log("This is the action '$action::$target' for the menu pannel ($source).");
-			}
+			$this->call('_menuPannel_select', array('mybusiness', 1, $target));
 		}
 		
 	}

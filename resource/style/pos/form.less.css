@@ -45,6 +45,7 @@ button {
 	margin: 3px;
 	width:100px;
 	height: 60px;
+	overflow: hidden;
 }
 button.disabled{
 	background-color: rgba(0,0,0,0) !important;

@@ -150,7 +150,7 @@ create procedure _menuPannel_arrangeButtons(
 	
 	if _pageCount > 1 then
 		insert into menuButton (business, pos, id, action, caption, buttonOrder, bound)
-			values (ibusiness, ipos, 'PREVIOUSPAGE', 'PNLACTION', 'PREVIOUS', -1, true)
+			values (ibusiness, ipos, 'PREVPAGE', 'PNLACTION', 'PREVIOUS', -1, true)
 			, (ibusiness, ipos, 'NEXTPAGE', 'PNLACTION', 'NEXT', 9999, true)
 		;
 	end if;
@@ -202,10 +202,32 @@ create procedure _menuPannel_select(
 
 ) _menuPannel_select: begin
 
+	declare _action varchar(10);
+	declare _id varchar(20);
 	
 	if not @errorNo is null then leave _menuPannel_select; end if;
 	
+	select id, action into _id, _action from menuButton
+		where business = ibusiness and pos = ipos and id = iid
+	;
+	
+	case _id 
+		when 'PREVPAGE' then
+			update menuPannel
+				set currentPage= if ( currentPage > 0, currentPage - 1, pageCount - 1 )
+				where business = ibusiness and pos = ipos
+			;
+				
+		when 'NEXTPAGE' then
+			update menuPannel
+				set currentPage= if ( CurrentPage < pageCount - 1, currentPage + 1, 0 )
+				where business = ibusiness and pos = ipos
+			;
+					
+	
+	end case;
 
+	
 end _menuPannel_select$$
 
 
