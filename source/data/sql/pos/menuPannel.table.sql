@@ -29,6 +29,10 @@ create table if not exists menuPannel(
 	business varchar(10) not null,
 	pos integer not null,
 	currentMenu varchar(10),
+	pageWidth integer,
+	viewWidth integer,
+	pageCount integer,
+	currentPage integer,
 
 	primary key ( business, pos )
 ) engine InnoDB, default character set utf8;
@@ -39,16 +43,18 @@ create table if not exists menuButton(
 
 	business varchar(10) not null,
 	pos integer not null,
-	action varchar(10) not null,
+	id varchar(10) not null,
+	action varchar(10),
 	active bool,
 	disabled bool,
 	visible bool,
 	caption varchar(30) not null,
+	bound bool,
 	buttonOrder integer,
 	secondCaption varchar(30),
 	class varchar(80),
 
-	primary key ( business, pos, action )
+	primary key ( business, pos, id )
 ) engine InnoDB, default character set utf8;
 
 

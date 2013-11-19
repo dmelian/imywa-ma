@@ -5,10 +5,11 @@ class pos_form_select extends pos_form{
 	
 	public function OnLoad(){
 
-		$this->pannel[]= new pos_pannel_select( 0, 0, 60, 100, 2, 3 );
+		$this->pannel[]= new pos_pannel_select( 0, 20, 75, 80, 5, 5 );
 		$this->pannel[0]->OnLoad();
-		$this->pannel[]= new pos_pannel_menu( 60, 50, 40, 50 );
-		$this->pannel[]= new pos_pannel_info( 60, 0, 40, 50 );
+		$this->pannel[]= new pos_pannel_menu( 0, 0, 75, 20, 1, 5 );
+		$this->pannel[1]->OnLoad();
+		$this->pannel[]= new pos_pannel_info( 75, 0, 25, 100 );
 		
 	}
 	

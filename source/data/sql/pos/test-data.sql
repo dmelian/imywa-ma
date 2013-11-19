@@ -23,6 +23,7 @@ insert into turn (business, pos, workDay, turn, opening, openUser)
 
 
 insert into selectPannel ( business, pos ) select business, pos from pos; 
+insert into menuPannel ( business, pos ) select business, pos from pos; 
 
 
 insert into itemGroup ( business, itemGroup, description ) values

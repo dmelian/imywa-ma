@@ -28,7 +28,6 @@ class pos_pannel_select extends pos_pannel{
 						, '_source' => $this->UId
 						)
 					);
-					//TODO: CHANGE TYPE TO ACTION.
 					if ( $button['action'] != 'nop' ) $button['onclick']= "pos_submit($action);";
 					$document->button( $button );
 				}
