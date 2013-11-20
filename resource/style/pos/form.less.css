@@ -59,18 +59,33 @@ Color levels
 low-color: #4040A0 - normal background, active text
 high-color: #C0C0FF - shadow, border, active background.
 */
-.pnl-select button {
+.pnl-select button.group {
 	background-color: #4040a0;
 	border-color: #c0c0ff;
 	box-shadow: 4px 4px 8px 0px #C0C0FF; 
 	color: white;
 }
-.pnl-select button.active {
+.pnl-select button.group.active {
 	background-color: #c0c0ff;
 	border-style: inset;
 	box-shadow: 1px 1px 8px 3px #C0C0FF;
 	font-weight: bold;
 	color: #4040a0;
+}
+
+.pnl-select button.item {
+	background-color: #40a0a0;
+	border-color: #c0ffff;
+	box-shadow: 4px 4px 8px 0px #c0ffff; 
+	color: white;
+}
+
+.pnl-select button.item.active{
+	background-color: #c0ffff;
+	border-style: inset;
+	box-shadow: 1px 1px 8px 3px #c0ffff;
+	font-weight: bold;
+	color: #40a0a0;
 }
 
 /*

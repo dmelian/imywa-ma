@@ -203,9 +203,69 @@ set @item= @item + 1; set @order= @order + 1;
 insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
 insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
 set @item= @item + 1; set @order= @order + 1;
-set @group= 'G';
+
+set @group= 'G'; set @parentGroup= 'G';
 insert into itemGroup ( business, itemGroup, parentGroup, description ) values
 	( @business, @group, @mainGroup, concat_ws(' ', 'Group', @group) );
+
+insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
+insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
+set @item= @item + 1; set @order= @order + 1;
+insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
+insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
+set @item= @item + 1; set @order= @order + 1;
+insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
+insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
+set @item= @item + 1; set @order= @order + 1;
+insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
+insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
+set @item= @item + 1; set @order= @order + 1;
+insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
+insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
+set @item= @item + 1; set @order= @order + 1;
+insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
+insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
+set @item= @item + 1; set @order= @order + 1;
+
+set @group= 'GA'; 
+insert into itemGroup ( business, itemGroup, parentGroup, description ) values
+	( @business, @group, @parentGroup, concat_ws(' ', 'Group', @group) );
+insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
+insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
+set @item= @item + 1; set @order= @order + 1;
+insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
+insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
+set @item= @item + 1; set @order= @order + 1;
+
+set @group= 'GB';
+insert into itemGroup ( business, itemGroup, parentGroup, description ) values
+	( @business, @group, @parentGroup, concat_ws(' ', 'Group', @group) );
+insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
+insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
+set @item= @item + 1; set @order= @order + 1;
+insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
+insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
+set @item= @item + 1; set @order= @order + 1;
+
+set @group= 'GC';
+insert into itemGroup ( business, itemGroup, parentGroup, description ) values
+	( @business, @group, @parentGroup, concat_ws(' ', 'Group', @group) );
+insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
+insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
+set @item= @item + 1; set @order= @order + 1;
+insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
+insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
+set @item= @item + 1; set @order= @order + 1;
+
+set @group= 'GD';
+insert into itemGroup ( business, itemGroup, parentGroup, description ) values
+	( @business, @group, @parentGroup, concat_ws(' ', 'Group', @group) );
+insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
+insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
+set @item= @item + 1; set @order= @order + 1;
+insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
+insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
+set @item= @item + 1; set @order= @order + 1;
 
 
 	

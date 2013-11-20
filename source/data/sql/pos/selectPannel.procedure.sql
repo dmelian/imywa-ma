@@ -50,8 +50,8 @@ create procedure _selectPannel_loadItem(
 
 	delete from selectButton where business = ibusiness and pos = ipos;
 
-	insert into selectButton(business, pos, id, action, caption, buttonOrder)
-		select ibusiness, ipos, itemGroup, 'group', description, groupOrder
+	insert into selectButton(business, pos, id, action, caption, buttonOrder, class)
+		select ibusiness, ipos, itemGroup, 'group', description, groupOrder, 'group'
 			from itemGroup where business = ibusiness and parentGroup = igroup
 	;
 	
@@ -60,8 +60,8 @@ create procedure _selectPannel_loadItem(
 	;
 	if _maxOrder is null then set _maxOrder= 1; end if;
 	
-	insert into selectButton(business, pos, id, action, caption, buttonOrder)
-		select ibusiness, ipos, groupItems.item, 'item', item.description, groupItems.itemOrder + _maxOrder
+	insert into selectButton(business, pos, id, action, caption, buttonOrder, class)
+		select ibusiness, ipos, groupItems.item, 'item', item.description, groupItems.itemOrder + _maxOrder, 'item'
 		from groupItems inner join item on groupItems.business = item.business and groupItems.item = item.item
 		where groupItems.business = ibusiness and groupItems.itemGroup = igroup
 	;
