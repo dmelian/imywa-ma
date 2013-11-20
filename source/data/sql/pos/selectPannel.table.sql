@@ -10,6 +10,7 @@ create table if not exists selectPannel(
 	pageWidth integer,
 	viewWidth integer,
 	pageCount integer,
+	homeGroup varchar(10),
 	dimLeft float, dimTop float,
 	dimWidth float, dimHeight float,
 	primary key ( business, pos )

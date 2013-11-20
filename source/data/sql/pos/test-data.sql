@@ -22,7 +22,7 @@ insert into turn (business, pos, workDay, turn, opening, openUser)
 ;
 
 
-insert into selectPannel ( business, pos ) select business, pos from pos; 
+insert into selectPannel ( business, pos, homeGroup ) select business, pos, @mainGroup from pos; 
 insert into menuPannel ( business, pos ) select business, pos from pos; 
 
 

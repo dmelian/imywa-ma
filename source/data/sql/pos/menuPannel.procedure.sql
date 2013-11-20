@@ -204,6 +204,8 @@ create procedure _menuPannel_select(
 
 	declare _action varchar(10);
 	declare _id varchar(20);
+	declare _currentGroup varchar(10);
+	declare _homeGroup varchar(10);
 	
 	if not @errorNo is null then leave _menuPannel_select; end if;
 	
@@ -223,7 +225,41 @@ create procedure _menuPannel_select(
 				set currentPage= if ( CurrentPage < pageCount - 1, currentPage + 1, 0 )
 				where business = ibusiness and pos = ipos
 			;
-					
+
+		when 'HOME' then
+			select currentGroup, homeGroup into _currentGroup, _homeGroup
+				from selectPannel where business = ibusiness and pos = ipos
+			;
+
+			if _homeGroup = _currentGroup then
+				select mainGroup into _currentGroup from pos 
+					where business = ibusiness and pos = ipos
+				; 
+				update selectPannel set homeGroup = _currentGroup
+					where business = ibusiness and pos = ipos
+				;
+			
+			else
+				set _currentGroup = _homeGroup;
+
+			end if;
+
+			call _selectPannel_loadItem( ibusiness, ipos, _currentGroup ); 
+			if not @errorNo is null then leave _menuPannel_select; end if;
+
+		when 'LOCK' then
+			update selectPannel
+				set homeGroup = currentGroup
+				where business = ibusiness and pos = ipos
+			;
+
+		when 'PARENT' then
+			select itemGroup.parentGroup into _currentGroup from itemGroup, selectPannel 
+				where selectPannel.business = ibusiness and selectPannel.pos = ipos
+					and itemGroup.business = ibusiness and itemGroup.itemGroup = selectPannel.currentGroup;
+			
+			call _selectPannel_loadItem( ibusiness, ipos, _currentGroup ); 
+			if not @errorNo is null then leave _menuPannel_select; end if;
 	
 	end case;
 

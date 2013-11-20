@@ -48,6 +48,8 @@ create procedure _selectPannel_loadItem(
 	call _turn_check( ibusiness, ipos, _workDay, _turn );	
 	if not @errorNo is null then leave _selectPannel_loadItem; end if;
 
+	update selectPannel set currentGroup= igroup where business = ibusiness and pos = ipos;
+
 	delete from selectButton where business = ibusiness and pos = ipos;
 
 	insert into selectButton(business, pos, id, action, caption, buttonOrder, class)
@@ -225,7 +227,7 @@ create procedure _selectPannel_select(
 		when 'item' then
 			call pos_selectItem(ibusiness, ipos, _id );
 			if not @errorNo is null then leave _selectPannel_select; end if;
-			select mainGroup into _id from pos where business = ibusiness and pos = ipos;
+			select homeGroup into _id from selectPannel where business = ibusiness and pos = ipos;
 			call _selectPannel_loadItem( ibusiness, ipos, _id ); 
 			if not @errorNo is null then leave _selectPannel_select; end if;
 		
