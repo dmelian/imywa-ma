@@ -34,17 +34,20 @@ create procedure pos_selectItem(
 
 ) pos_selectItem: begin
 
+	declare _selectedGroup varchar(10);
 	declare _presale integer;
 	declare _qty integer;
 	
 	if not @errorNo is null then leave pos_selectItem; end if;
 	
+	select currentGroup into _selectedGroup from selectPannel where business = ibusiness and pos = ipos;
+
 	select max(presale), 1 into _presale, _qty
 		from presale
 		-- TODO all on this.
 	;
 
-	call _presale_select( ibusiness, ipos, _presale, iitem, _qty );
+	call _presale_select( ibusiness, ipos, _presale, _selectedGroup, iitem, _qty );
 	if not @errorNo is null then leave pos_selectItem; end if;
 	
 

@@ -47,6 +47,7 @@ create table if not exists presaleLine(
 	version integer not null,
 	creationTime datetime,
 	tariff varchar(10) not null,
+	itemGroup varchar(10) not null,	
 	item varchar(20) not null,
 	quantity integer default 0,
 	price double default 0,

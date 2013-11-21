@@ -236,6 +236,7 @@ create procedure _presale_select(
 	in ibusiness varchar(10),	
 	in ipos integer,
 	in ipresale integer,
+	in igroup varchar(10),
 	in iitem varchar(20),
 	in iqty float
 
@@ -305,8 +306,8 @@ create procedure _presale_select(
 			where price.business = ibusiness and price.tariff = _tariff and price.item = iitem
 		; -- TODO: Check the price first for another line in the ticket and second from the item table.
 
-		insert into presaleLine ( business, pos, workDay, turn, presale, version, lineNo, creationTime, tariff, item, quantity, price )
-			values ( ibusiness, ipos, _workDay, _turn, _presale, _version, _lineNo, now(), _tariff, iitem, iqty, _price );
+		insert into presaleLine ( business, pos, workDay, turn, presale, version, lineNo, creationTime, tariff, itemGroup, item, quantity, price )
+			values ( ibusiness, ipos, _workDay, _turn, _presale, _version, _lineNo, now(), _tariff, igroup, iitem, iqty, _price );
 
 	end if;
 		

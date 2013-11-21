@@ -34,3 +34,7 @@ alter table presaleLine add
 	foreign key ( business, tariff, item ) references price ( business, tariff, item ) 
 		on delete restrict on update cascade;
 
+alter table presaleLine add
+	foreign key ( business, itemGroup, item ) references groupItems ( business, itemGroup, item ) 
+		on delete restrict on update cascade;
+
