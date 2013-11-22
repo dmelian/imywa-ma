@@ -6,6 +6,7 @@ TODO LIST
 
 - pos. Set rows and cols class for a better arrangement.
 - pos. Show active menu actions. (test with the lock action).
+- pos. The display pannel. 
 
 IMPROVEMENTS
 ------------
