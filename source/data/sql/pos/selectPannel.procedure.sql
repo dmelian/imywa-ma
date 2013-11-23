@@ -195,8 +195,9 @@ create procedure _selectPannel_getButtons(
 	if not @errorNo is null then leave _selectPannel_getButtons; end if;
 
 	select 'buttons' as resultId, 
-		button.id, button.caption, button.amount, button.quantity, button.secondCaption, button.class,
-			button.action, button.id as target
+		button.id, button.caption, button.amount, button.quantity, button.secondCaption
+			, concat_ws(' ', button.class, concat('row', button.row), concat('col', button.col) ) as class
+			, button.action, button.id as target
 		
 		from selectPannel as pannel inner join selectButton as button 
 			on pannel.business = button.business and pannel.pos = button.pos
