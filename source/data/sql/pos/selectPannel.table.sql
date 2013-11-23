@@ -8,6 +8,8 @@ create table if not exists selectPannel(
 	currentGroup varchar(10),
 	currentPage integer default 0,
 	pageWidth integer,
+	rowCount integer,
+	colCount integer,
 	viewWidth integer,
 	pageCount integer,
 	homeGroup varchar(10),
@@ -29,6 +31,8 @@ create table if not exists selectButton(
 	quantity integer,
 	secondCaption varchar(30),
 	class varchar(80),
+	row integer,
+	col integer,
 
 	primary key ( business, pos, id ),
 	index ( business, pos, buttonOrder )

@@ -13,7 +13,7 @@ class pos_pannel_select extends pos_pannel{
 	public function OnLoad(){
 		$this->class[]= 'pnl-select';
 		$this->UId= $this->newUId();
-		$this->call( '_selectPannel_init', array( 'mybusiness', 1, $this->rowCount * $this->colCount ) );
+		$this->call( '_selectPannel_init', array( 'mybusiness', 1, $this->rowCount, $this->colCount ) );
 		$this->call( '_selectPannel_loadItem', array( 'mybusiness', 1, 'main' ) );
 	}
 	
