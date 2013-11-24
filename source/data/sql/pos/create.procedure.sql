@@ -6,6 +6,8 @@ source sale.procedure.sql
 source item.procedure.sql
 source selectPannel.procedure.sql
 source menuPannel.procedure.sql
+source displayPannel.procedure.sql
 source pos.procedure.sql
 source business.procedure.sql
+
 

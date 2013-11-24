@@ -11,6 +11,7 @@ source sale.table.sql
 source item.table.sql
 source selectPannel.table.sql
 source menuPannel.table.sql
+source displayPannel.table.sql
 source pos.table.sql
 source group.table.sql
 source business.table.sql
@@ -25,6 +26,7 @@ source sale.relation.sql
 source item.relation.sql
 source selectPannel.relation.sql
 source menuPannel.relation.sql
+source displayPannel.relation.sql
 source pos.relation.sql
 source group.relation.sql
 source business.relation.sql

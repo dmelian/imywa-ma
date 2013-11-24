@@ -176,11 +176,87 @@ body{
 
 
 /* DISPLAY PANNEL */
+	@rowTop: 20px;
+	@rowHeight: 70px;
+	@colLeft: 10px;
+	@colWidth: 120px;
+	@horzMargin: 3px;
 
 .pnl-display{
 	right: 0px; top: 0px; width:200px; height:100%;
 	background-color: rgba(0,255,0,0.05);
-	
 
+	.label {
+		position: absolute;
+		border-width: 2px;
+		border-radius: 5px 5px 50px 50px / 5px;
+		margin: 3px;
+		width:100px;
+		height: 50px;
+		overflow: hidden;
+
+		background-color: #a040a0;
+		border-color: #ff80ff;
+		color: white;
+
+		label.caption{
+			position: absolute;
+			display: block;
+			top:0px;
+			color: black;
+	
+		}
+
+		label.value{
+			position: absolute;
+			display: block;
+			top:20px;
+			left:10px;
+			color: pink;
+		}
+
+	}
+
+	.label.disabled{
+		border-style: solid;
+		background-color: rgba(0,0,0,0) !important;
+		border-color: #808080 !important;
+		color: #a0a0a0 !important;
+
+		label{
+			color: silver;
+		}
+	}
+	
+	.row0 { top: 0 * @rowHeight + @rowTop; }
+	.row1 { top: 1 * @rowHeight + @rowTop; }
+	.row2 { top: 2 * @rowHeight + @rowTop; }
+	.row3 { top: 3 * @rowHeight + @rowTop; }
+	.row4 { top: 4 * @rowHeight + @rowTop; }
+	.row5 { top: 5 * @rowHeight + @rowTop; }
+	.row6 { top: 6 * @rowHeight + @rowTop; }
+	.row7 { top: 7 * @rowHeight + @rowTop; }
+	.row8 { top: 8 * @rowHeight + @rowTop; }
+	.row9 { top: 9 * @rowHeight + @rowTop; }
+	.row10 { top: 10 * @rowHeight + @rowTop; }
+	.row11 { top: 11 * @rowHeight + @rowTop; }
+	.row13 { top: 13 * @rowHeight + @rowTop; }
+	.row14 { top: 14 * @rowHeight + @rowTop; }
+	.row15 { top: 15 * @rowHeight + @rowTop; }
+	.row16 { top: 16 * @rowHeight + @rowTop; }
+	.row17 { top: 17 * @rowHeight + @rowTop; }
+	.row18 { top: 18 * @rowHeight + @rowTop; }
+	.row19 { top: 19 * @rowHeight + @rowTop; }
+	.row20 { top: 20 * @rowHeight + @rowTop; }
+
+	.col0 { left: 0 * @colWidth + @colLeft; }
+	.col1 { left: 1 * @colWidth + @colLeft; }
+	.col2 { left: 2 * @colWidth + @colLeft; }
+	.col3 { left: 3 * @colWidth + @colLeft; }
+	.col4 { left: 4 * @colWidth + @colLeft; }
+	.col5 { left: 5 * @colWidth + @colLeft; }
+
+	.width2 { width: 2 * @colWidth - @horzMargin; }
+	.width3 { width: 3 * @colWidth - @horzMargin; }
 }
 

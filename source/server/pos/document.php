@@ -18,15 +18,14 @@ class pos_document extends ma_object{
 		
 		$content= $button['caption'];
 
-		/* Borja's Content
-		<label style="position: absolute;top: 0px;left: 50%;">  </label>
-		<label>g1</label>
-		*/		
-		
 		$this->buffer[]= "<button class=\"{$button['class']}\" value=\"{$button['id']}\""
 			. " onclick=\"" . htmlentities($button['onclick']) . "\""
 			.">$content</button>";
 		
+	}
+
+	public function displayLabel ( $label ) {
+
 	}
 
 }
