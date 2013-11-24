@@ -9,7 +9,8 @@ create procedure _menuPannel_init(
 
 	in ibusiness varchar(10),
 	in ipos integer,
-	in ipageWidth integer
+	in irowCount integer,
+	in icolCount integer
 
 ) _menuPannel_init: begin
 
@@ -18,8 +19,8 @@ create procedure _menuPannel_init(
 	-- TODO Check if the pos is not being used.
 
 	update menuPannel
-		set pageWidth= ipageWidth,
-			currentPage= 0
+		set rowCount= irowCount, colCount= icolCount
+			, pageWidth= irowCount * icolCount, currentPage= 0
 		where business = ibusiness and pos = ipos
 	;
 
@@ -82,6 +83,9 @@ create procedure _menuPannel_arrangeButtons(
 	declare _buttonsToAdd integer;
 	declare _iButton integer;
 	declare _maxOrder integer;
+	declare _viewOrder integer;
+	declare _colCount integer;
+	declare _rowCount integer;
 
 	declare _buttonOrder integer;
 	declare dsid varchar(20);
@@ -96,7 +100,9 @@ create procedure _menuPannel_arrangeButtons(
 	-- view Adjust.
 	
 	select count(*) into _buttonCount from menuButton where business = ibusiness and pos = ipos;
-	select pageWidth into _pageWidth from menuPannel where business = ibusiness and pos = ipos;
+	select pageWidth, rowCount, colCount into _pageWidth, _rowCount, _colCount 
+		from menuPannel where business = ibusiness and pos = ipos
+	;
 	
 	set _viewWidth= if ( _buttonCount <= _pageWidth , _pageWidth , _pageWidth - 2 );
 	set _pageCount= _buttonCount div _viewWidth;
@@ -126,7 +132,9 @@ create procedure _menuPannel_arrangeButtons(
 
 	-- Reorder.
 	
-	set _buttonOrder= 0;
+	set _buttonOrder= 0
+		, _viewOrder= if (_pageCount > 1, 1, 0)
+	;
 
 	open ds;
 	repeat
@@ -137,10 +145,16 @@ create procedure _menuPannel_arrangeButtons(
 
 			update menuButton
 				set buttonOrder= _buttonOrder
+					, col= _viewOrder mod _colCount
+					, row= _viewOrder div _colCount
 				where business = ibusiness and pos = ipos and id = dsid
 			;
 
 			set _buttonOrder= _buttonOrder + 1;
+
+			if _pageCount = 1 then set _viewOrder= _buttonOrder;
+			else set _viewOrder= if( _buttonOrder mod _viewWidth = 0, 1, _viewOrder + 1);
+			end if;
 
 		end if;
 	until endds end repeat;
@@ -149,9 +163,9 @@ create procedure _menuPannel_arrangeButtons(
 	-- pannelAction buttons.
 	
 	if _pageCount > 1 then
-		insert into menuButton (business, pos, id, action, caption, buttonOrder, bound)
-			values (ibusiness, ipos, 'PREVPAGE', 'PNLACTION', 'PREVIOUS', -1, true)
-			, (ibusiness, ipos, 'NEXTPAGE', 'PNLACTION', 'NEXT', 9999, true)
+		insert into menuButton (business, pos, id, action, caption, buttonOrder, bound, row, col)
+			values (ibusiness, ipos, 'PREVPAGE', 'PNLACTION', 'PREVIOUS', -1, true, 0, 0)
+			, (ibusiness, ipos, 'NEXTPAGE', 'PNLACTION', 'NEXT', 9999, true, _rowCount - 1, _colCount -1)
 		;
 	end if;
 	
@@ -173,8 +187,9 @@ create procedure _menuPannel_getButtons(
 	if not @errorNo is null then leave _menuPannel_getButtons; end if;
 
 	select 'buttons' as resultId, 
-		button.id, button.caption, button.secondCaption, button.class,
-			button.action, button.id as target
+		button.id, button.caption, button.secondCaption
+			, concat_ws(' ', button.class, concat('row', button.row), concat('col', button.col) ) as class
+			, button.action, button.id as target
 		
 		from menuPannel as pannel inner join menuButton as button 
 			on pannel.business = button.business and pannel.pos = button.pos

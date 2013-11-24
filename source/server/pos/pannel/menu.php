@@ -14,7 +14,7 @@ class pos_pannel_menu extends pos_pannel{
 	public function OnLoad(){
 		$this->class[]= 'pnl-menu';
 		$this->UId= $this->newUId();
-		$this->call( '_menuPannel_init', array( 'mybusiness', 1, $this->rowCount * $this->colCount ) );
+		$this->call( '_menuPannel_init', array( 'mybusiness', 1, $this->rowCount, $this->colCount ) );
 		$this->call( '_menuPannel_loadMenu', array( 'mybusiness', 1, 'SELECT' ) );
 	}
 	

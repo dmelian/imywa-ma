@@ -7,7 +7,7 @@ class pos_form_select extends pos_form{
 
 		$this->pannel[]= new pos_pannel_select( 0, 25, 75, 80, 2, 4 );
 		$this->pannel[0]->OnLoad();
-		$this->pannel[]= new pos_pannel_menu( 0, 0, 75, 25, 1, 5 );
+		$this->pannel[]= new pos_pannel_menu( 0, 0, 75, 25, 2, 4 );
 		$this->pannel[1]->OnLoad();
 		$this->pannel[]= new pos_pannel_info( 75, 0, 25, 100 );
 		
