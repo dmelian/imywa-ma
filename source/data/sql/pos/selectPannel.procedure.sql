@@ -42,6 +42,7 @@ create procedure _selectPannel_loadItem(
 	declare _buttonCount integer;
 	declare _pageWidth integer;
 	declare _pageCount integer;
+	declare _language varchar(3);
 
 
 	if not @errorNo is null then leave _selectPannel_loadItem; end if;
@@ -49,13 +50,19 @@ create procedure _selectPannel_loadItem(
 	call _turn_check( ibusiness, ipos, _workDay, _turn );	
 	if not @errorNo is null then leave _selectPannel_loadItem; end if;
 
+	select currentLanguage into _language 
+		from pos where business = ibusiness and pos = ipos
+	;
+
 	update selectPannel set currentGroup= igroup where business = ibusiness and pos = ipos;
 
 	delete from selectButton where business = ibusiness and pos = ipos;
 
 	insert into selectButton(business, pos, id, action, caption, buttonOrder, class)
-		select ibusiness, ipos, itemGroup, 'group', description, groupOrder, 'group'
-			from itemGroup where business = ibusiness and parentGroup = igroup
+		select ibusiness, ipos, itemGroup, 'group', caption.captionText, groupOrder, 'group'
+			from itemGroup 
+				inner join caption on itemGroup.caption = caption. caption and caption.language = _language 
+			where business = ibusiness and parentGroup = igroup
 	;
 	
 	select max(buttonOrder) + 1 into _maxOrder 
@@ -64,8 +71,9 @@ create procedure _selectPannel_loadItem(
 	if _maxOrder is null then set _maxOrder= 1; end if;
 	
 	insert into selectButton(business, pos, id, action, caption, buttonOrder, class)
-		select ibusiness, ipos, groupItems.item, 'item', item.description, groupItems.itemOrder + _maxOrder, 'item'
+		select ibusiness, ipos, groupItems.item, 'item', caption.captionText, groupItems.itemOrder + _maxOrder, 'item'
 		from groupItems inner join item on groupItems.business = item.business and groupItems.item = item.item
+			inner join caption on item.caption = caption.caption and caption.language = _language
 		where groupItems.business = ibusiness and groupItems.itemGroup = igroup
 	;
 	

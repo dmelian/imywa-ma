@@ -142,6 +142,7 @@ call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @ite
 set @item= @item + 1;
 
 set @group= 'G';
+set @parentGroup= @group;
 call _itemGroup_new( @business, @group, @mainGroup, 'en', concat_ws(' ', 'Group', @group), @order );  set @order= @order +1;
 call _itemGroup_setCaption( @business, @group, 'es', concat_ws(' ', 'Grupo', @group) );
 
