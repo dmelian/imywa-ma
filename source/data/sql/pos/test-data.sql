@@ -8,9 +8,9 @@ set @workDay= '2013/01/01';
 
 select 'CONFIGURATION';
 
-insert into business ( business, currentWorkDay ) values ( @business, @workDay );
-insert into pos ( business, pos, saleSerialNo, defaultTariff, mainGroup, currentTurn, status ) values 
-	( @business, @pos, null, @tariff, @mainGroup, 1, 'opened' )
+insert into business ( business, currentWorkDay, defaultLanguage ) values ( @business, @workDay, 'en' );
+insert into pos ( business, pos, saleSerialNo, defaultTariff, mainGroup, currentTurn, status, currentLanguage ) values 
+	( @business, @pos, null, @tariff, @mainGroup, 1, 'opened', 'en' )
 ;
 
 insert into tariff( business, tariff ) values ( @business, @tariff );
@@ -25,247 +25,260 @@ insert into turn (business, pos, workDay, turn, opening, openUser)
 insert into selectPannel ( business, pos, homeGroup ) select business, pos, @mainGroup from pos; 
 insert into menuPannel ( business, pos ) select business, pos from pos; 
 
+insert into language(language) values ('es'), ('en');
 
-insert into itemGroup ( business, itemGroup, description ) values
-	( @business, @mainGroup, 'Main' )
-;
+set @order= 1;
+call _itemGroup_new( @business, @mainGroup, null, 'en', 'Main', @order ); set @order= @order +1;
+call _itemGroup_setCaption (@business, @mainGroup, 'es', 'Principal');
 
 insert into VATType ( VATType ) values ( @vat );
 
-SELECT 'GROUP';
-
-set @order= 1;
-set @group= 'A';
-insert into itemGroup ( business, itemGroup, parentGroup, description ) values
-	( @business, @group, @mainGroup, concat_ws(' ', 'Group', @group) );
-
 SELECT 'ITEMS';
-	
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
+
+set @group= 'A';
+call _itemGroup_new( @business, @group, @mainGroup, 'en', concat_ws(' ', 'Group', @group), @order );  set @order= @order +1;
+call _itemGroup_setCaption( @business, @group, 'es', concat_ws(' ', 'Grupo', @group) );
+
+
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+
 set @group= 'B';
-insert into itemGroup ( business, itemGroup, parentGroup, description ) values
-	( @business, @group, @mainGroup, concat_ws(' ', 'Group', @group) );
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
+call _itemGroup_new( @business, @group, @mainGroup, 'en', concat_ws(' ', 'Group', @group), @order );  set @order= @order +1;
+call _itemGroup_setCaption( @business, @group, 'es', concat_ws(' ', 'Grupo', @group) );
+
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+
 set @group= 'C';
-insert into itemGroup ( business, itemGroup, parentGroup, description ) values
-	( @business, @group, @mainGroup, concat_ws(' ', 'Group', @group) );
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
+call _itemGroup_new( @business, @group, @mainGroup, 'en', concat_ws(' ', 'Group', @group), @order );  set @order= @order +1;
+call _itemGroup_setCaption( @business, @group, 'es', concat_ws(' ', 'Grupo', @group) );
+
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+
 set @group= 'D';
-insert into itemGroup ( business, itemGroup, parentGroup, description ) values
-	( @business, @group, @mainGroup, concat_ws(' ', 'Group', @group) );
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
+call _itemGroup_new( @business, @group, @mainGroup, 'en', concat_ws(' ', 'Group', @group), @order );  set @order= @order +1;
+call _itemGroup_setCaption( @business, @group, 'es', concat_ws(' ', 'Grupo', @group) );
+
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+
 set @group= 'E';
-insert into itemGroup ( business, itemGroup, parentGroup, description ) values
-	( @business, @group, @mainGroup, concat_ws(' ', 'Group', @group) );
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
+call _itemGroup_new( @business, @group, @mainGroup, 'en', concat_ws(' ', 'Group', @group), @order );  set @order= @order +1;
+call _itemGroup_setCaption( @business, @group, 'es', concat_ws(' ', 'Grupo', @group) );
+
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+
 set @group= 'F';
-insert into itemGroup ( business, itemGroup, parentGroup, description ) values
-	( @business, @group, @mainGroup, concat_ws(' ', 'Group', @group) );
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
+call _itemGroup_new( @business, @group, @mainGroup, 'en', concat_ws(' ', 'Group', @group), @order );  set @order= @order +1;
+call _itemGroup_setCaption( @business, @group, 'es', concat_ws(' ', 'Grupo', @group) );
 
-set @group= 'G'; set @parentGroup= 'G';
-insert into itemGroup ( business, itemGroup, parentGroup, description ) values
-	( @business, @group, @mainGroup, concat_ws(' ', 'Group', @group) );
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
 
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
+set @group= 'G';
+call _itemGroup_new( @business, @group, @mainGroup, 'en', concat_ws(' ', 'Group', @group), @order );  set @order= @order +1;
+call _itemGroup_setCaption( @business, @group, 'es', concat_ws(' ', 'Grupo', @group) );
+
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
 
 set @group= 'GA'; 
-insert into itemGroup ( business, itemGroup, parentGroup, description ) values
-	( @business, @group, @parentGroup, concat_ws(' ', 'Group', @group) );
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
+call _itemGroup_new( @business, @group, @parentGroup, 'en', concat_ws(' ', 'Group', @group), @order );  set @order= @order +1;
+call _itemGroup_setCaption( @business, @group, 'es', concat_ws(' ', 'Grupo', @group) );
 
-set @group= 'GB';
-insert into itemGroup ( business, itemGroup, parentGroup, description ) values
-	( @business, @group, @parentGroup, concat_ws(' ', 'Group', @group) );
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
 
-set @group= 'GC';
-insert into itemGroup ( business, itemGroup, parentGroup, description ) values
-	( @business, @group, @parentGroup, concat_ws(' ', 'Group', @group) );
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
 
-set @group= 'GD';
-insert into itemGroup ( business, itemGroup, parentGroup, description ) values
-	( @business, @group, @parentGroup, concat_ws(' ', 'Group', @group) );
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
-insert into item(business, item, description, VATType) values (@business, @item, concat_ws(' ', 'Item', @item), @vat);
-insert into groupItems ( business, itemGroup, item, itemOrder ) values ( @business, @group, @item, @order); 
-set @item= @item + 1; set @order= @order + 1;
+set @group= 'GB'; 
+call _itemGroup_new( @business, @group, @parentGroup, 'en', concat_ws(' ', 'Group', @group), @order );  set @order= @order +1;
+call _itemGroup_setCaption( @business, @group, 'es', concat_ws(' ', 'Grupo', @group) );
+
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+
+set @group= 'GC'; 
+call _itemGroup_new( @business, @group, @parentGroup, 'en', concat_ws(' ', 'Group', @group), @order );  set @order= @order +1;
+call _itemGroup_setCaption( @business, @group, 'es', concat_ws(' ', 'Grupo', @group) );
+
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+
+set @group= 'GD'; 
+call _itemGroup_new( @business, @group, @parentGroup, 'en', concat_ws(' ', 'Group', @group), @order );  set @order= @order +1;
+call _itemGroup_setCaption( @business, @group, 'es', concat_ws(' ', 'Grupo', @group) );
+
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+
+set @group= 'GE'; 
+call _itemGroup_new( @business, @group, @parentGroup, 'en', concat_ws(' ', 'Group', @group), @order );  set @order= @order +1;
+call _itemGroup_setCaption( @business, @group, 'es', concat_ws(' ', 'Grupo', @group) );
+
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+
+set @group= 'GF'; 
+call _itemGroup_new( @business, @group, @parentGroup, 'en', concat_ws(' ', 'Group', @group), @order );  set @order= @order +1;
+call _itemGroup_setCaption( @business, @group, 'es', concat_ws(' ', 'Grupo', @group) );
+
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+
+set @group= 'GG'; 
+call _itemGroup_new( @business, @group, @parentGroup, 'en', concat_ws(' ', 'Group', @group), @order );  set @order= @order +1;
+call _itemGroup_setCaption( @business, @group, 'es', concat_ws(' ', 'Grupo', @group) );
+
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+call _item_new( @business, @group, @item, 'en', concat_ws(' ', 'Item', @item), @vat);
+call _item_setCaption ( @business, @item, 'es', concat_ws(' ', 'Artículo', @item));
+set @item= @item + 1;
+
+
 
 
 	

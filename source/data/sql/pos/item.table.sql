@@ -7,7 +7,8 @@ create table if not exists item(
 	
 	business varchar(10) not null,
 	item varchar(20) not null,
-	description varchar(30),
+	description varchar(30), /* TODO erase */
+	caption integer,
 	VATType varchar(10),
 
 	primary key ( business, item )

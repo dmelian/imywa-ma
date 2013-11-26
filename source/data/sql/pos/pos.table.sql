@@ -11,6 +11,7 @@ create table if not exists pos(
 	mainGroup varchar(10),
 	currentSession varchar(20),
 	currentTurn integer,
+	currentLanguage varchaR(3),
 
 	primary key ( business, pos )
 ) engine InnoDB, default character set utf8;

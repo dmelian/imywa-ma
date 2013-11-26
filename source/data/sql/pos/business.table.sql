@@ -7,6 +7,7 @@ create table if not exists business(
 	business varchar(10) not null,
 	name varchar(50),
 	pricesIncludeVAT bool,
+	defaultLanguage varchar(3),
 	currentWorkDay date,
 
 	primary key ( business )

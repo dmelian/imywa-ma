@@ -18,6 +18,7 @@ source business.table.sql
 source vattype.table.sql
 source workday.table.sql
 source tariff.table.sql
+source caption.table.sql
 
 source serialno.relation.sql
 source presale.relation.sql
@@ -32,5 +33,6 @@ source group.relation.sql
 source business.relation.sql
 source workday.relation.sql
 source tariff.relation.sql
+source caption.relation.sql
 
 source create.procedure.sql

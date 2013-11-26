@@ -8,7 +8,8 @@ create table if not exists itemGroup(
 	business varchar(10) not null,
 	itemGroup varchar(10) not null,
 	parentGroup varchar (10),
-	description varchar(30),
+	caption integer,
+	description varchar(30), /*TODO erase this.*/
 	groupOrder integer,
 	
 	primary key ( business, itemGroup )
