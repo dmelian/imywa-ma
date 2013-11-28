@@ -106,22 +106,23 @@ class ma_sql_connection extends ma_object{
 		$this->close();
 	}
 	
-	private function getGlobalVarsSetQuery(){
+	private function globalsQuery(){
 		$sentence= '';
 		foreach ($this->getGlobals() as $global => $value){
-			$sentence.= ", @$global='$value'";
+			if ( is_scalar($value) ) $sentence.= ", @$global='$value'";
+			else ( is_array($value) ) for ($i= 0; $i < count($value); $i++) $sentence.= ", @$global$i='{$value[$i]}'";
 		}
 		return "set @errorno= null$sentence;";
 	}
 	
-	public function call($procedure, $params=array()){
+	public function call($procedure, $params=array(), $paramDefs=false ){
 		
 		if ( $this->closed ) return;
 		$this->closeResults();
 		
 		if ( !$this->unfinishedTransaction || $this->success ){
-			if( !$this->conn->real_query( $this->getGlobalVarsSetQuery() ) ); //TODO: log this error.
-			$query= "call $procedure" . $this->expand( $params );
+			if( !$this->conn->real_query( $this->globalsQuery() ) ); //TODO: log this error.
+			$query= "call $procedure" . $this->params( $expand, $paramDefs );
 			$this->log("PROC> {$this->config['host']}:{$this->config['database']}:{$this->config['user']} $query", 'sql');
 			$this->success= $this->conn->real_query( $query );
 			if ( $this->success ){
@@ -214,17 +215,26 @@ class ma_sql_connection extends ma_object{
 		}
 	}
 
-	protected function expand($userParams, $defParams=false){
+	protected function expand($userParams, $paramDefs=false){
 		
 		$parlist = ''; $prefix = '';
 		if (! $userParams) $userParams = array();
-		elseif (!is_array($userParams)) $userParams = explode(',',$userParams);
+		elseif ( !is_array( $userParams ) ) $userParams = explode(',',$userParams);
 		
-		if ($defParams){
-			// The procedure's parameters have been defined		
-			if ($defParams != 'void') foreach($defParams as $defParam) {
-				if (isset($userParams[$defParam])) $parlist.= "$prefix\"{$userParam[$defParam]}\"";
-				else $parlist.= $prefix . 'null';
+		if ($paramDefs){
+			// defined params. A string array with the parameter names. 
+			// Parameter array can be defined as array(name, count).
+			if ($paramDefs != 'void') foreach($paramDefs as $defParam) {
+				if ( is_array( $defParam ) ){
+					foreach($i=0; $i<$defParam[1]; $i++) {
+						if (isset($userParams["{$defParam[0]}$i"])) $parlist.= "$prefix\"{$userParam[{$defParam[0]}$i]}\"";
+						else $parlist.= $prefix . 'null';
+						$prefix= ', ';
+					}
+				} else {
+					if (isset($userParams[$defParam])) $parlist.= "$prefix\"{$userParam[$defParam]}\"";
+					else $parlist.= $prefix . 'null';
+				}
 				$prefix= ', ';
 			}
 			

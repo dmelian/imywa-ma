@@ -104,15 +104,23 @@ class ma_sys_session extends ma_object {
 		return $this->lastUId;
 	}
 
-	public function setGlobal( $key, $value ){ $this->app[$this->currentApp]->setGlobal( $key, $value ); }
-	public function getGlobal( $key ){ return $this->app[$this->currentApp]->getGlobal( $key ); }
+	public function setGlobal( $key, $value ){ 
+		$this->app[$this->currentApp]->setGlobal( $key, $value ); 
+	}
+
+	public function getGlobal( $key ){ 
+		switch ( $key ){
+			case 'sessionId': case 'user': return $this->$key;
+			default: return $this->app[$this->currentApp]->getGlobal( $key ); 
+		}
+	}
+
 	public function getGlobals(){
 		$globals= $this->app[$this->currentApp]->getGlobals();
 		$globals['sessionId'] = $this->sessionId;
 		$globals['user']= $this->user;
 		return $globals; 
-	}
-	
+	}	
 	
 	public function newRequest(){
 		global $_MANAGER;
