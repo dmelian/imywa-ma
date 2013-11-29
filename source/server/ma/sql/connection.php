@@ -110,7 +110,7 @@ class ma_sql_connection extends ma_object{
 		$sentence= '';
 		foreach ($this->getGlobals() as $global => $value){
 			if ( is_scalar($value) ) $sentence.= ", @$global='$value'";
-			else ( is_array($value) ) for ($i= 0; $i < count($value); $i++) $sentence.= ", @$global$i='{$value[$i]}'";
+			elseif ( is_array($value) ) for ($i= 0; $i < count($value); $i++) $sentence.= ", @$global$i='{$value[$i]}'";
 		}
 		return "set @errorno= null$sentence;";
 	}
@@ -122,7 +122,7 @@ class ma_sql_connection extends ma_object{
 		
 		if ( !$this->unfinishedTransaction || $this->success ){
 			if( !$this->conn->real_query( $this->globalsQuery() ) ); //TODO: log this error.
-			$query= "call $procedure" . $this->params( $expand, $paramDefs );
+			$query= "call $procedure" . $this->expand( $params, $paramDefs );
 			$this->log("PROC> {$this->config['host']}:{$this->config['database']}:{$this->config['user']} $query", 'sql');
 			$this->success= $this->conn->real_query( $query );
 			if ( $this->success ){
@@ -226,9 +226,10 @@ class ma_sql_connection extends ma_object{
 			// Parameter array can be defined as array(name, count).
 			if ($paramDefs != 'void') foreach($paramDefs as $defParam) {
 				if ( is_array( $defParam ) ){
-					foreach($i=0; $i<$defParam[1]; $i++) {
-						if (isset($userParams["{$defParam[0]}$i"])) $parlist.= "$prefix\"{$userParam[{$defParam[0]}$i]}\"";
-						else $parlist.= $prefix . 'null';
+					for( $i=0; $i<$defParam[1]; $i++ ) {
+						if ( isset($userParams["{$defParam[0]}$i"]) ) {
+							$parlist.= "$prefix\"" . $userParam["{$defParam[0]}$i"] . "\"";
+						} else $parlist.= $prefix . 'null';
 						$prefix= ', ';
 					}
 				} else {

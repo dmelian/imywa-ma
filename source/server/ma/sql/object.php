@@ -3,7 +3,7 @@ class ma_sql_object extends ma_object{
 	// for objects with database access.
 	protected $procDefs= array();
 
-	protected setProcedureDef( $procedure, $paramDefs= 'void' ){
+	protected function setProcedureDef( $procedure, $paramDefs= 'void' ){
 		$this->procDefs[$procedure]= $paramDefs;
 	/* paramDef
 
@@ -27,7 +27,7 @@ class ma_sql_object extends ma_object{
 	*/
 	}
 	
-	public __call( $procedure, $arguments ){
+	public function __call( $procedure, $arguments ){
 		if ( isset($this->procDefs[$procedure]) ) $this->call( $procedure, $arguments[0], $this->procDefs[$procedure] );
 	}	
 	

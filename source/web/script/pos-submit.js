@@ -1,4 +1,4 @@
-function pos_submit( options ) {
+function pos_action( options ) {
 	
 	var form = document.createElement("form");
 	form.setAttribute('method', 'post'); //TODO When test are passed change get to post.
