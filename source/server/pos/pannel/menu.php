@@ -29,7 +29,7 @@ class pos_pannel_menu extends pos_pannel{
 						, '_source' => $this->UId
 						)
 					);
-					if ( $button['action'] != 'nop' ) $button['onclick']= "pos_submit($action);";
+					if ( $button['action'] != 'nop' ) $button['onclick']= "pos_action($action);";
 					$document->button( $button );
 				}
 				$buttons->close();

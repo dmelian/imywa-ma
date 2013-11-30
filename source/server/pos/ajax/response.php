@@ -1,4 +1,8 @@
 <?php
-class pos_submit_response extends ma_object{
+class pos_ajax_response extends ma_object{
+
+	public function paint(){
+		echo "My ajax response";
+	}
 
 }

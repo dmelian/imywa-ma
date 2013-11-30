@@ -7,6 +7,13 @@ TODO LIST
 - pos. Show active menu actions. (test with the lock action).
 - pos. The display pannel. 
 
+UNFINISHED WORKS
+----------------
+
+- pos. ajax.
+- pos. display-pannel.
+- sql-objects.
+
 IMPROVEMENTS
 ------------
 
