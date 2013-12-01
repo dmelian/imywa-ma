@@ -1,5 +1,5 @@
 <?php
-class pos_form_main extends pos_form{
+class pos_main extends pos_form{
 
 	public function OnLoad(){
 
