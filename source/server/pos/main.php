@@ -17,7 +17,7 @@ class pos_main extends pos_form{
 
 				foreach($selectButtons as $button) {
 					$action= json_encode( array( 
-						'_action' => $button['action']
+						'_action' => 'select'
 						, '_target' => $button['target']
 						, '_source' => $this->UId
 						)
@@ -34,7 +34,7 @@ class pos_main extends pos_form{
 			if ( $menuButtons= $this->getResult( 'menuButtons' ) ) {
 				foreach($menuButtons as $button) {
 					$action= json_encode( array( 
-						'_action' => $button['action']
+						'_action' => 'menu'
 						, '_target' => $button['target']
 						, '_source' => $this->UId
 						)
@@ -62,7 +62,7 @@ class pos_main extends pos_form{
 
 		switch ($action){
 
-		case 'group': case 'item': 
+		case 'select': case 'menu': 
 				$this->call('pos_executeAction', array($action, $target) );
 
 /*		case 'pannelAction';
@@ -74,7 +74,7 @@ class pos_main extends pos_form{
 */			
 		default:
 			//$this->call( get_called_class() . "_$action", prepare_params(sessionVars, target, options));
-			$this->log("This is the action '$action::$target'.");
+			$this->log("pos.main.action not implemented action:'$action', target:'$target'.");
 
 		}
 	}

@@ -40,10 +40,21 @@ select @currFile as file, 'PROCEDURE pos_executeAction ( action, target ) : (  )
 drop procedure if exists pos_executeAction$$
 create procedure pos_executeAction(
 
+	in iaction varchar(10),
+	in itarget varchar(20)
 
 ) pos_executeAction: begin
 
 	if not @errorNo is null then leave pos_executeAction; end if;
+	case iaction 
+		when 'select' then
+			call _selectPannel_select( @business, @pos, itarget );
+
+		when 'menu' then
+			call _menuPannel_select( @business, @pos, itarget );
+
+		-- else error.
+	end case;	
 
 
 end pos_executeAction$$
