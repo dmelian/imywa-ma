@@ -186,7 +186,7 @@ create procedure _menuPannel_getButtons(
 
 	if not @errorNo is null then leave _menuPannel_getButtons; end if;
 
-	select 'buttons' as resultId, 
+	select 'menuButtons' as resultId, 
 		button.id, button.caption, button.secondCaption
 			, concat_ws(' ', button.class, concat('row', button.row), concat('col', button.col) ) as class
 			, button.action, button.id as target

@@ -6,6 +6,7 @@ TODO LIST
 
 - pos. Show active menu actions. (test with the lock action).
 - pos. The display pannel. 
+- pos. All the works on form. Delete pannels.
 
 UNFINISHED WORKS
 ----------------
