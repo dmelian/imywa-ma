@@ -1,0 +1,4 @@
+--langdef=imywasql
+--langmap=imywasql:.sql
+--regex-imywasql=/^create procedure *([a-zA-Z0-9_]+)/\1/d,procedure/
+--regex-imywasql=/^create table (if not exists)? ([a-zA-Z0-9_]+)/\2/d,table/
