@@ -3,7 +3,7 @@
 class pos_application extends ma_sys_application{
 	
 	public $appName= 'test-pos';
-	public $mediaType= 'pos_submit'; // pos_ajax or pos_submit
+	public $mediaType= 'pos_ajax'; // pos_ajax or pos_submit
 	public $startForm= 'pos_main';
 	public $host= 'localhost';
 	public $mainDb= 'mybusiness';

@@ -24,6 +24,7 @@ alter table displayLabel add
 		on delete restrict on update cascade;
 
 
+/*
 set @currentMenu= 'SELECT';
 select @currFile as file, concat_ws(' ', @currentMenu, 'MENU VALUES') as command;
 insert into menu(menu) values (@currentMenu);
@@ -46,6 +47,6 @@ call _menuAction_new(@currentMenu, 'STATUS', 'Status', 60); call _menuAction_set
 call _menuAction_new(@currentMenu, 'CASHCOUNT', 'Cash Count', 61); call _menuAction_setCaption(@currentMenu, 'CASHCOUNT', 'es', 'Arqueo');
 call _menuAction_new(@currentMenu, 'REMOVE', 'Remove', 42); call _menuAction_setCaption(@currentMenu, 'REMOVE', 'es', 'Quitar');
 -- call _menuAction_new(); call _menuAction_setCaption(@currentMenu, '', 'es', '');
-
+*/
 
 

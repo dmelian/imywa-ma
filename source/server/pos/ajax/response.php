@@ -1,8 +1,19 @@
 <?php
 class pos_ajax_response extends ma_object{
 
+	protected $content=array();
+
 	public function paint(){
-		echo "My ajax response";
+		foreach($this->content as $id => $content){
+			echo "content:$id\n";
+			foreach($content as $element) {
+				print_r( $element );
+			}
+		}
+	}
+
+	public function setContent($id, $content){
+		$this->content[$id]= $content;
 	}
 
 }

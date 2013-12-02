@@ -1,6 +1,7 @@
 set @fileCount= @fileCount + 1;
 set @currFile= concat_ws(' - ', @fileCount, 'SELECTPANNEL.TABLE.SQL');
 
+
 select @currFile as file, 'TABLE selectPannel' as command;
 create table if not exists selectPannel(
 	business varchar(10) not null,
@@ -17,6 +18,8 @@ create table if not exists selectPannel(
 	dimWidth float, dimHeight float,
 	primary key ( business, pos )
 ) engine InnoDB, default character set utf8;
+
+
 
 select @currFile as file, 'TABLE selectButton' as command;
 create table if not exists selectButton(

@@ -63,7 +63,13 @@ class pos_main extends pos_form{
 		switch ($action){
 
 		case 'select': case 'menu': 
+				// Execute the action
 				$this->call('pos_executeAction', array($action, $target) );
+				// Populating the ajax-response
+				$this->call('pos_getContent');
+				foreach(array('selectButtons','menuButtons','displayContent') as $content){
+					$response->setContent($content, $this->getResult($content));
+				}
 
 /*		case 'pannelAction';
 				//$this->call( get_called_class() . "_$action", prepare_params(sessionVars, target, options));
