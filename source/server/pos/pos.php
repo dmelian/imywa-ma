@@ -3,7 +3,7 @@ class pos_pos extends pos_form{
 
 	protected $config;
 
-	public function OnLoad(){
+	public function OnLoad(){ //¿$response as argument or a refresh action? 
 
 		$this->call('pos_initialize'); //business and pos are send by globals vars.
 		$config= $this->getResult('posConfig');
@@ -14,6 +14,15 @@ class pos_pos extends pos_form{
 	
 	
 	public function OnPaint( $document ){
+		
+		$document->buttonPannel('select', $this->config['selectCols'], $this->config['selectRows']);
+		$document->buttonPannel('menu', $this->config['menuCols'], $this->config['menuRows']);
+		$document->pannel('display');
+
+	}
+	
+
+	public function OnPaintContent( $document ){
 		
 		if ( $this->call( 'pos_getContent' ) ) {
 
@@ -63,6 +72,9 @@ class pos_pos extends pos_form{
 		}		
 	}
 	
+	public function setContent ($response){
+	}
+
 	public function OnAction($action, $target, $options, $response){
 
 		switch ($action){

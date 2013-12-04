@@ -19,16 +19,29 @@ class pos_document extends ma_object{
 	
 	public function button( $button ){
 		
-		$content= $button['caption'];
+		$this->buffer[]= "<button class=\"{$button['class']}\" id=\"{$button['id']}\">"
+			. "{$button['caption']}</button>";
 
-		$this->buffer[]= "<button class=\"{$button['class']}\" value=\"{$button['id']}\""
-			. " onclick=\"" . htmlentities($button['onclick']) . "\""
-			.">$content</button>";
+		//Dynamically we load the value and onclickevent.
 		
 	}
 
-	public function displayLabel ( $label ) {
+	public function buttonPannel( $id, $colCount, $rowCount ){
+		$this->output( "<div class=\"pannel pnl-$id\">" );
 
+		for ( $ix= 0, $row= 0; $row < $rowCount; $row++ ) {
+			for ( $col= 0; $col < $colCount; $col++, $ix++ ) {
+				$this->button( array('id'=>"$id$ix", 'caption'=>'--'
+					, 'class'=>"disabled row$row col$col") );
+			}
+		}
+
+		$this->output( "</div>" ); 
+
+	}
+
+	public function pannel($id){
+		$this->output( "<div class=\"pannel pnl-$id\"></div>" );
 	}
 
 }
