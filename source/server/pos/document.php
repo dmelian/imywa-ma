@@ -1,14 +1,17 @@
 <?php
-class pos_ajax_document extends ma_object{
+class pos_document extends ma_object{
 	
 	protected $buffer= array();
 	
-	public function paint(){
+	public function paint( $response ){
 		echo '<html><head>';
 		echo '<link rel="stylesheet" href="style/pos.css">';
 		echo '<script type="text/javascript" src="script/pos-ajax.js"></script>';
 		echo '</head><body>';
 		echo implode($this->buffer);
+		echo '<script type="text/javascript">';
+		echo 'pos_update("' . $response->paint() . '");';
+		echo '</script>';
 		echo '<body></html>';
 	}
 	

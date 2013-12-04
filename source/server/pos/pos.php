@@ -1,14 +1,19 @@
 <?php
-class pos_main extends pos_form{
+class pos_pos extends pos_form{
+
+	protected $config;
 
 	public function OnLoad(){
 
 		$this->call('pos_initialize'); //business and pos are send by globals vars.
+		$config= $this->getResult('posConfig');
+		$this->config= $config->current();
+		$config->close(); 
 
 	}
 	
 	
-	public function OnPaint($document){
+	public function OnPaint( $document ){
 		
 		if ( $this->call( 'pos_getContent' ) ) {
 

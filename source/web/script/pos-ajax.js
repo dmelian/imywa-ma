@@ -12,9 +12,10 @@ function pos_action( options ) {
 	xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
 	xhr.send(query.join('&'));
 
-	//Do something with the xhr.responseText;
-	alert(xhr.responseText);
-
-
+	pos_update(xhr.responseText);
 	
+}
+
+function pos_update( content ){
+	alert( content );
 }

@@ -3,8 +3,8 @@
 class pos_application extends ma_sys_application{
 	
 	public $appName= 'test-pos';
-	public $mediaType= 'pos_ajax'; // pos_ajax or pos_submit
-	public $startForm= 'pos_main';
+	public $mediaType= 'pos';
+	public $startForm= 'pos_pos';
 	public $host= 'localhost';
 	public $mainDb= 'mybusiness';
 	public $dbTextId= 'pos_dberror';
@@ -16,7 +16,7 @@ class pos_application extends ma_sys_application{
 		$this->setGlobal('languages', array('en', 'es'));
 		
 		if ( !$this->call( 'pos_openSession', array($this->business, $this->pos) ) ){
-			$this->startForm= 'pos_dialog_forceOpen';
+			$this->startForm= 'pos_forceOpen';
 		}
 	}
 	

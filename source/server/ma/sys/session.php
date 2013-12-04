@@ -131,10 +131,6 @@ class ma_sys_session extends ma_object {
 			exit( $this->caption('ERR_CREATESESSION') );
 		}
 		if (!$this->authenticated) $this->authenticate();
-
-		
-		
-		
 		
 		if ($this->authenticated) {
 			$this->extractRequestProperties();
@@ -258,9 +254,9 @@ class ma_sys_session extends ma_object {
 			
 		} else {
 			$documentClass= $app->mediaType . "_document";
-			$document= new $documentClass($config);
-			$this->paint($document);
-			$document->paint();
+			$document= new $documentClass( $config );
+			$this->paint( $document );
+			$document->paint( $response );
 		}
 		
 

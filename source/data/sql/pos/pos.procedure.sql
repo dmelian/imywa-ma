@@ -10,13 +10,31 @@ create procedure pos_initialize(
 
 ) pos_initialize: begin
 
+	declare _selectRows integer;
+	declare _selectCols integer;
+	declare _menuRows integer;
+	declare _menuCols integer;
+	declare _displayRows integer;
+	declare _displayCols integer;
+
 	if not @errorNo is null then leave pos_initialize; end if;
 
-	call _selectPannel_init( @business, @pos, 2, 4 );
+	set _selectRows= 2, _selectCols= 5
+		, _menuRows= 2, _menuCols= 5
+		, _displayRows= 10, _displayCols= 3
+	;
+
+	call _selectPannel_init( @business, @pos, _selectRows, _selectCols );
 	call _selectPannel_loadItem( @business, @pos, 'main' );
-	call _menuPannel_init( @business, @pos, 2, 4 );
+	call _menuPannel_init( @business, @pos, _menuRows, _menuCols );
 	call _menuPannel_loadMenu( @business, @pos, 'SELECT' );
-	call _displayPannel_init( @business, @pos, 3, 10 );
+	call _displayPannel_init( @business, @pos, _displayRows, _displayCols );
+
+	select 'posConfig' as resultId
+		, _selectRows as selectRows, _selectCols as selectCols
+		, _menuRows as menuRows, _menuCols as menuCols
+		, _displayRows as displayRows, _displayCols as displayCols
+	;
 
 end pos_initialize$$
 

@@ -1,5 +1,5 @@
 <?php
-class pos_ajax_response extends ma_object{
+class pos_response extends ma_object{
 
 	protected $content=array();
 
