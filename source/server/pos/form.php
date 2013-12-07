@@ -1,25 +1,49 @@
 <?php
-class pos_form extends ma_sql_object {
-	protected $UId;
-	protected $children= array();
+class pos_form extends ma_sys_form{
+
+	protected $config;
+
+	public function OnLoad(){ //¿$response as argument or a refresh action? 
+
+		$this->call('pos_initialize'); //business and pos are send by globals vars.
+		$config= $this->getResult('posConfig');
+		$this->config= $config->current();
+		$config->close(); 
+
+	}
+	
+	
+	public function OnPaint( $document ){
 		
-	public function initialize(){
-		$this->UId= $this->newUId();
-		if ( method_exists($this, 'OnLoad') ) $this->OnLoad();
-		foreach($this->children as $child) $child->initialize();
+		$document->buttonPannel('select', $this->config['selectCols'], $this->config['selectRows']);
+		$document->buttonPannel('menu', $this->config['menuCols'], $this->config['menuRows']);
+		$document->pannel('display');
+
 	}
 	
-	public function paint($document){
-		if ( method_exists($this, 'OnPaint') ) $this->OnPaint($document);
-		else foreach($this->children as $child) $child->paint($document);
-	}
-	
-	public function executeAction($action, $source, $target, $options, $response){
-		if ($source == $this->UId) {
-			if ( method_exists($this, 'OnAction') ) $this->OnAction($action, $target, $options, $response);
-		} else {
-			foreach($this->children as $child) $child->executeAction($action, $source, $target, $options, $response);
+
+	public function OnAction($action, $target, $options, $response){
+
+		switch ($action){
+
+		case 'select': case 'menu': 
+			// Execute the action
+			$this->call('pos_executeAction', array($action, $target) );
+			break;
+
+		case 'loading':
+			// Populating the ajax-response
+			$this->call('pos_getContent');
+			foreach(array('selectButtons','menuButtons','displayContent') as $content){
+				$response->setContent($content, $this->getResult($content));
+			}
+			break;
+
+		default:
+			//$this->call( get_called_class() . "_$action", prepare_params(sessionVars, target, options));
+			$this->log("pos.main.action not implemented action:'$action', target:'$target'.");
+
 		}
 	}
-	
 }
+	

@@ -12,6 +12,7 @@ class ma_sys_session extends ma_object {
 	private $currentApp;
 	private $lastUId= 0;
 	private $lastReservedUId= 0;
+	public $UId= 0;
 	
 	public static function create($environment) {
 		
@@ -28,6 +29,7 @@ class ma_sys_session extends ma_object {
 	
 	public function __construct($environment){
 		parent::__construct();
+		$this->UId= $this->newUId();
 	
 		// Create the session folder
 		$sessionbasedir = "{$environment['usrDir']}/run/sessions/";
@@ -123,7 +125,6 @@ class ma_sys_session extends ma_object {
 	}	
 	
 	public function newRequest(){
-		global $_MANAGER;
 		
 		$this->lastRequestTime= date('Y-m-d H:i:s');
 		if (!$this->sessionId) {
@@ -132,31 +133,42 @@ class ma_sys_session extends ma_object {
 		}
 		if (!$this->authenticated) $this->authenticate();
 		
-		if ($this->authenticated) {
-			$this->extractRequestProperties();
-			if (!$this->currentApp){
-				
-				$appClassname= $this->environment['defaultApp'];
-				$app= new $appClassname($this->environment);
-				// database must be accessed in the application initialization. 
-				// So the host, mainDb and dbTextId must be created inside the application constructor.
-				
-				$this->app[$app->appName]= $app;
-				$this->currentApp= $app->appName;
-				$_MANAGER->currConnection= new ma_sql_connection( $app->host, $app->mainDb, $this->user, $this->password, $app->dbTextId );
-				$app->initialize(); //TODO must have an uid.
-				
-			} else {
-				$app= $this->app[$this->currentApp];
-				$_MANAGER->currConnection= new ma_sql_connection( $app->host, $app->mainDb, $this->user, $this->password, $app->dbTextId );
-				
-			}
+		$this->extractRequestProperties();
+		if (!$this->currentApp){
 			
-			$this->sequence++;
-			$this->executeRequest();
-			$_MANAGER->currConnection->close();
+			$appClassname= $this->environment['defaultApp'];
+			$app= new $appClassname($this->environment);
+			// database must be accessed in the application initialization. 
+			// So the host, mainDb and dbTextId must be created inside the application constructor.
 			
-		}
+			$this->app[$app->appName]= $app;
+			$this->currentApp= $app->appName;
+			$this->request['action']= 'init';
+			$this->request['source']= $app->UId;
+			
+		} else $app= $this->app[$this->currentApp];
+		
+		$this->sequence++;
+		
+		$config= array_merge($this->environment, $this->request);
+		$responseClass= $this->environment['mediaType'] . "_response";
+		if ( class_exists( $responseClass ) ) $response= new $responseClass($config);
+		else $response= new ma_sys_response($config); //Applications without ajax has not to define the response class.
+
+		$this->executeAction( $this->request['action']
+			, $this->request['source'], $this->request['target'], $this->request['options']
+			, $response 
+		);
+		
+		if ( !$this->request['isAjax'] ) {
+			$documentClass= $this->environment['mediaType'] . "_document";
+			$document= new $documentClass( $config );
+			$this->paint( $document );
+			$document->paint( $response );
+			
+		} else $response->paint();
+
+			
 		//TODO: if ($this->currentApp) $this->app[$this->currentApp]->prepareForSerialize(); // to unset the current form.
 		$this->serialize();
 		
@@ -219,47 +231,32 @@ class ma_sys_session extends ma_object {
 				$this->request['target']= urldecode( $_SERVER['QUERY_STRING'] ); 
 			}
 		}
-		if ( !isset($this->request['source']) ) $this->request['source']= ''; //TODO: get the source.
+		if ( !isset($this->request['source']) ) $this->request['source']= $this->UId;
 		if ( !isset($this->request['target']) ) $this->request['target']= '';
 		
 	}
 	
-	private function executeRequest(){
+	private function executeAction( $action, $source, $target, $options, $response ){
+		global $_MANAGER;
 		
-		$app= $this->app[$this->currentApp];
-		
-		$config= array_merge($this->environment, $this->request);
-		$responseClass= $app->mediaType . "_response";
-		if ( class_exists( $responseClass ) ) $response= new $responseClass($config);
-		else $response= new ma_sys_response($config); //Applications without ajax has not to define the response class.
+		if ($source == $this->UId) {
+			switch ($action){
+			case 'switchApp': case 'openApp': case 'closeApp': case 'logout':
+				break;
+			
+			default:
+				if ( method_exists($this, 'OnAction') ) $this->OnAction($action, $target, $options, $response);
 
-		// Action execution
-		switch ($this->request['action']){
-			//TODO: Case the session actions (changeApp, ...)
-		case 'switchApp': case 'openApp': case 'closeApp': case 'logout':
-			break;
-			
-		default:
-			$app->executeAction( $this->request['action']
-				, $this->request['source']
-				, $this->request['target']
-				, $this->request['options']
-				, $response
-			);
-		}
-		
-		// Paint the result in the document.
-		if ( $this->request['isAjax'] ) {
-			$response->paint();
-			
+			}
 		} else {
-			$documentClass= $app->mediaType . "_document";
-			$document= new $documentClass( $config );
-			$this->paint( $document );
-			$document->paint( $response );
-		}
-		
+			$app= $this->app[$this->currentApp]; 
+			$_MANAGER->currConnection= new ma_sql_connection( $app->host, $app->mainDb
+				, $this->user, $this->password, $app->dbTextId );
 
+			$app->executeAction( $action, $source, $target, $options, $response );
+
+			$_MANAGER->currConnection->close();
+		}
 	}
 	
 	private function paint($document){

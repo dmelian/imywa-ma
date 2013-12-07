@@ -4,7 +4,7 @@ class pos_application extends ma_sys_application{
 	
 	public $appName= 'test-pos';
 	public $mediaType= 'pos';
-	public $startForm= 'pos_pos';
+	public $startForm= 'pos_form';
 	public $host= 'localhost';
 	public $mainDb= 'mybusiness';
 	public $dbTextId= 'pos_dberror';

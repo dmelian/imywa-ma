@@ -6,14 +6,13 @@ TODO LIST
 
 - pos. Show active menu actions. (test with the lock action).
 - pos. The display pannel. 
-- pos. All the works on form. Delete pannels.
 
 UNFINISHED WORKS
 ----------------
 
 - pos. ajax.
 - pos. display-pannel.
-- sql-objects.
+- sql-objects. 
 
 IMPROVEMENTS
 ------------

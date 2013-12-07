@@ -4,3 +4,4 @@ language = en
 authMethod = anonymous
 logType = directory
 defaultApp = pos_application
+mediaType = pos

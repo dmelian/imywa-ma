@@ -216,6 +216,7 @@ class ma_sql_connection extends ma_object{
 	}
 
 	protected function expand($userParams, $paramDefs=false){
+		//paramDef= void-> it has not parameters.
 		
 		$parlist = ''; $prefix = '';
 		if (! $userParams) $userParams = array();

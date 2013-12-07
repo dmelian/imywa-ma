@@ -27,7 +27,7 @@ class pos_document extends ma_object{
 	}
 
 	public function buttonPannel( $id, $colCount, $rowCount ){
-		$this->output( "<div class=\"pannel pnl-$id\">" );
+		$this->output( "<div class=\"pannel pnl-$id\" config='cols:$colCount,rows:$rowCount'>" );
 
 		for ( $ix= 0, $row= 0; $row < $rowCount; $row++ ) {
 			for ( $col= 0; $col < $colCount; $col++, $ix++ ) {

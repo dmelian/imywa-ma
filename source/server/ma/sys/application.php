@@ -10,6 +10,7 @@ class ma_sys_application extends ma_sql_object{
 	public $mainDb
 	public $dbTextId
 	*/
+	public $UId;
 	protected $currentForm;
 	protected $breadCrumb= array();
 	protected $globals= array();
@@ -19,14 +20,14 @@ class ma_sys_application extends ma_sql_object{
 	
 	public function __construct($environment){
 		parent::__construct();
-		//TODO Initialize the application.
+
+		$this->UId= $this->newUId();
+
 		$this->appDir= "{$environment['sessionDir']}/{$this->appName}";
 		$success= mkdir($this->appDir."/forms", 0777, true);
 		if ($success) $success= chmod($this->appDir, 0777);
 		if ($success) $success= chmod($this->appDir."/forms", 0777);
 		//TODO IF not success then log error and die. 
-		
-		//TODO Load the Start form. ??
 		
 	}
 	
@@ -35,51 +36,41 @@ class ma_sys_application extends ma_sql_object{
 	public function getGlobal($key) { return $this->globals[$key]; } 
 	public function getGlobals(){ return $this->globals; }
 	
-	public function initialize(){
+	public function executeAction( $action, $source, $target, $options, $response ){
 		
-		if ( method_exists( $this, 'OnLoad' ) ) $this->OnLoad();
+
+		if ($source == $this->UId) {
+			switch ($action){
+
+			case 'init':
+				if ( method_exists( $this, 'OnLoad' ) ) $this->OnLoad();
 		
-		$formClass= $this->startForm;
-		$form= new $formClass();
-		if ( method_exists($form, 'initialize') ) $form->initialize();
-		$this->formPush($form);
-		
-	}
-	
-	public function executeAction($action, $source, $target, $options, $response){
-		
-		//TODO: Check the source.
-		//TODO: Call OnAction($action, $options, $response);
-		
-		switch ($action){
-		case 'openForm':
-			
-			$formClass= trim(strtr( $target, '/', '_' ),"_ \t\n");
-			if ( class_exists( $formClass ) ) {
+				$formClass= $this->startForm;
 				$this->currentForm= new $formClass();
-				$this->currentForm->OnOpen($options, $response);
-//				initialize and OnRefresh are reemplaced for OnOpen. Too much simple.
-//				$this->currentForm->initialize( $options );
-//				$this->currentForm->executeAction( 'refresh', $source, $target, $options, $response);
-				$this->formPush($this->currentForm);
-				
-			} else {
-				//TODO log error: not found form.
-				echo "No se encuentra el formulario '$formClass'";
-				//TODO return errorResponse object.
+				$this->currentForm->executeAction($action, $this->currentForm->UId, $target, $options, $response);
+				$this->formPush($form);
+				break;
+
+
+			case 'openForm':
+			case 'closeForm': case 'switchForm': case 'formCall': case 'formReturn':
+				break;
+						
+			default:
+				if ( method_exists($this, 'OnAction') ) $this->OnAction($action, $target, $options, $response);
+
 			}
-			break;
+		
+
+		} else {
 			
-		case 'closeForm': case 'switchForm': case 'formCall': case 'formReturn':
-			break;
-			
-		default:
 			$this->currentForm= $this->formPop();
 			$response= $this->currentForm->executeAction($action, $source, $target, $options, $response);
 			$this->formPush($this->currentForm);
-			return $response;
-			
+
 		}
+
+
 	}
 	
 	public function paint($document){

@@ -1,10 +1,10 @@
 <?php
 class ma_sql_object extends ma_object{
 	// for objects with database access.
-	protected $procDefs= array();
+	protected $procDef= array();
 
-	protected function setProcedureDef( $procedure, $paramDefs= 'void' ){
-		$this->procDefs[$procedure]= $paramDefs;
+	protected function setProcedureDef( $procedure, $paramDef= 'void' ){
+		$this->procDef[$procedure]= $paramDef;
 	/* paramDef
 
 		parameter definitions.
@@ -27,14 +27,11 @@ class ma_sql_object extends ma_object{
 	*/
 	}
 	
-	public function __call( $procedure, $arguments ){
-		if ( isset($this->procDefs[$procedure]) ) $this->call( $procedure, $arguments[0], $this->procDefs[$procedure] );
-	}	
-	
-	protected function call( $procedure, $params=array(), $paramDefs=false ){
+	protected function call( $procedure, $param=array(), $paramDef=false ){
 		global $_MANAGER;
-		$_MANAGER->currConnection->setCallingInfo(get_called_class());
-		return $_MANAGER->currConnection->call($procedure, $params);
+		if ( !$paramDef && isset( $this->procDef[$procedure] ) ) $paramDef= $this->procDef['procedure'];
+		$_MANAGER->currConnection->setCallingInfo(get_called_class()); //TODO: improve this error log.
+		return $_MANAGER->currConnection->call($procedure, $param, $paramDef);
 	}
 	
 	protected function getError() {
