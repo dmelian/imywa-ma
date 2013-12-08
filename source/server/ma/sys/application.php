@@ -48,7 +48,7 @@ class ma_sys_application extends ma_sql_object{
 				$formClass= $this->startForm;
 				$this->currentForm= new $formClass();
 				$this->currentForm->executeAction($action, $this->currentForm->UId, $target, $options, $response);
-				$this->formPush($form);
+				$this->formPush($this->currentForm);
 				break;
 
 

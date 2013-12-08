@@ -48,7 +48,7 @@ create procedure pos_getContent(
 	if not @errorNo is null then leave pos_getContent; end if;
 	call _selectPannel_getButtons( @business, @pos);
 	call _menuPannel_getButtons( @business, @pos);
-	call _displayPannel_getContent( @business, @pos);
+	-- call _displayPannel_getContent( @business, @pos);
 
 
 end pos_getContent$$
@@ -82,9 +82,6 @@ select @currFile as file, 'PROCEDURE pos_openSession (  ) : (  )' as command$$
 drop procedure if exists pos_openSession$$
 create procedure pos_openSession(
 
-	in ibusiness varchar(10),
-	in ipos integer
-
 ) pos_openSession: begin
 
 	declare _currentSession varchar(20);
@@ -93,7 +90,7 @@ create procedure pos_openSession(
 
 	update pos set 
 		currentSession= @sessionId
-		where business = ibusiness and pos = ipos
+		where business = @business and pos = @pos
 	;
 
 

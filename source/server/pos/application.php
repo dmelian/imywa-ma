@@ -15,7 +15,7 @@ class pos_application extends ma_sys_application{
 		$this->setGlobal('language', 'en');
 		$this->setGlobal('languages', array('en', 'es'));
 		
-		if ( !$this->call( 'pos_openSession', array($this->business, $this->pos) ) ){
+		if ( !$this->call( 'pos_openSession' ) ){
 			$this->startForm= 'pos_forceOpen';
 		}
 	}

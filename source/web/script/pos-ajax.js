@@ -16,6 +16,26 @@ function pos_action( options ) {
 	
 }
 
+function pos_buttonAction( event ){
+	
+	var pannel= event.parentElement;
+	var options= { _action: pannel.id
+		, _source: pannel.attributes.source.value
+		, _target: event.value };
+	pos_action( options );
+
+}
+
 function pos_update( content ){
-	alert( content );
+	var parsedContent= JSON.parse(content);
+	for (var pannelId in parsedContent) {
+		var pannel= parsedContent[pannelId];
+		for (var i=0; i<pannel.length; i++){
+			var elementName= pannelId.concat(i);
+			var button= document.getElementById(elementName);
+			button.innerHTML= pannel[i].caption;
+			button.className= pannel[i].class;
+			button.value= pannel[i].target;
+		}
+	}
 }

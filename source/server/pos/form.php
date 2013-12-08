@@ -3,20 +3,28 @@ class pos_form extends ma_sys_form{
 
 	protected $config;
 
-	public function OnLoad(){ //¿$response as argument or a refresh action? 
+	public function OnLoad( $response ){ //¿$response as argument or a refresh action? 
 
 		$this->call('pos_initialize'); //business and pos are send by globals vars.
 		$config= $this->getResult('posConfig');
 		$this->config= $config->current();
 		$config->close(); 
 
+		$this->populateResponse( $response );
 	}
 	
+	public function populateResponse ( $response ){
+		$this->call('pos_getContent');
+		foreach(array('select','menu','display') as $content){
+			$response->setContent($content, $this->getResult($content));
+			//TODO UId, TARGET AND OPTIONS
+		}
+	}
 	
 	public function OnPaint( $document ){
 		
-		$document->buttonPannel('select', $this->config['selectCols'], $this->config['selectRows']);
-		$document->buttonPannel('menu', $this->config['menuCols'], $this->config['menuRows']);
+		$document->buttonPannel('select', $this->config['selectCols'], $this->config['selectRows'], $this->UId);
+		$document->buttonPannel('menu', $this->config['menuCols'], $this->config['menuRows'], $this->UId);
 		$document->pannel('display');
 
 	}
@@ -27,17 +35,10 @@ class pos_form extends ma_sys_form{
 		switch ($action){
 
 		case 'select': case 'menu': 
-			// Execute the action
 			$this->call('pos_executeAction', array($action, $target) );
+			$this->populateResponse( $response );
 			break;
 
-		case 'loading':
-			// Populating the ajax-response
-			$this->call('pos_getContent');
-			foreach(array('selectButtons','menuButtons','displayContent') as $content){
-				$response->setContent($content, $this->getResult($content));
-			}
-			break;
 
 		default:
 			//$this->call( get_called_class() . "_$action", prepare_params(sessionVars, target, options));

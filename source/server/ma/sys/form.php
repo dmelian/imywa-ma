@@ -15,7 +15,7 @@ class ma_sys_form extends ma_sql_object {
 		if ($source == $this->UId) {
 			switch($action){
 			case 'init':
-				if ( method_exists($this, 'OnLoad') ) $this->OnLoad();
+				if ( method_exists($this, 'OnLoad') ) $this->OnLoad( $response );
 				break;
 
 			default:

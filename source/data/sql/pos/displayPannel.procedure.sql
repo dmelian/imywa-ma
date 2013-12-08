@@ -38,7 +38,7 @@ create procedure _displayPannel_getContent(
 
 	if not @errorNo is null then leave _displayPannel_getContent; end if;
 
-	select 'displayContent' as resultId, displayVars.row, displayVars.col, displayVars.Width
+	select 'display' as resultId, displayVars.row, displayVars.col, displayVars.Width
 		, var.var, var.alignment, caption.captionText as caption, displayValues.varValue as displayValue
 		from displayPannel 
 			inner join displayValues on displayPannel.business = displayValues.business and displayPannel.pos = displayValues.pos

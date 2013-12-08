@@ -202,7 +202,7 @@ create procedure _selectPannel_getButtons(
 
 	if not @errorNo is null then leave _selectPannel_getButtons; end if;
 
-	select 'selectButtons' as resultId, 
+	select 'select' as resultId, 
 		button.id, button.caption, button.amount, button.quantity, button.secondCaption
 			, concat_ws(' ', button.class, concat('row', button.row), concat('col', button.col) ) as class
 			, button.action, button.id as target

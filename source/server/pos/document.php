@@ -10,7 +10,7 @@ class pos_document extends ma_object{
 		echo '</head><body>';
 		echo implode($this->buffer);
 		echo '<script type="text/javascript">';
-		echo 'pos_update("' . $response->paint() . '");';
+		echo 'pos_update(\''; $response->paint(); echo '\');';
 		echo '</script>';
 		echo '<body></html>';
 	}
@@ -19,15 +19,15 @@ class pos_document extends ma_object{
 	
 	public function button( $button ){
 		
-		$this->buffer[]= "<button class=\"{$button['class']}\" id=\"{$button['id']}\">"
+		$this->buffer[]= "<button class=\"{$button['class']}\" id=\"{$button['id']}\" onclick=\"pos_buttonAction(this);\">"
 			. "{$button['caption']}</button>";
 
 		//Dynamically we load the value and onclickevent.
 		
 	}
 
-	public function buttonPannel( $id, $colCount, $rowCount ){
-		$this->output( "<div class=\"pannel pnl-$id\" config='cols:$colCount,rows:$rowCount'>" );
+	public function buttonPannel( $id, $colCount, $rowCount, $source ){
+		$this->output( "<div id=\"$id\" class=\"pannel pnl-$id\" source=\"$source\">" );
 
 		for ( $ix= 0, $row= 0; $row < $rowCount; $row++ ) {
 			for ( $col= 0; $col < $colCount; $col++, $ix++ ) {
