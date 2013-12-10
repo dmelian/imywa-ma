@@ -18,7 +18,7 @@ class ma_sys_session extends ma_object {
 		
 		if ( $sessionId= isset( $_COOKIE['SESSION_ID'] ) ? $_COOKIE['SESSION_ID'] : '' ){
 			$sessionDir = "{$environment['usrDir']}/run/sessions/$sessionId";
-			$sessionFile= new ma_lib_syncFile("$sessionDir/session");
+			$sessionFile= new ma_sys_syncFile("$sessionDir/session");
 			if ($sessionFile->getContent()) return unserialize($sessionFile->content);
 			else ;//TODO Else LOG a request without file or anything error.
 		}
@@ -66,7 +66,7 @@ class ma_sys_session extends ma_object {
 
 	private function serialize(){
 		
-		$sessionFile= new ma_lib_syncFile( "{$this->sessionDir}/session" );
+		$sessionFile= new ma_sys_syncFile( "{$this->sessionDir}/session" );
 		if ( !$sessionFile->setContent( serialize( $this ) ) ) {
 			//TODO: LOG $sessionFile->errormsg Mensaje 'No se ha podido guardar su sesion'
 		}
@@ -95,7 +95,7 @@ class ma_sys_session extends ma_object {
 			if ( $this->lastUId != $this->lastReservedUId ) return $this->lastUId;
 		}
 		
-		$uidFile= new ma_lib_syncFile( "{$this->sessionDir}/lid" );
+		$uidFile= new ma_sys_syncFile( "{$this->sessionDir}/lid" );
 		if ( $uid= $uidFile->getContent( true ) ) {
 			$this->incUId($uid); $uidFile->setContent( $uid );
 			$this->lastUId= $uid . '0';

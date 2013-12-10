@@ -89,7 +89,7 @@ class ma_sys_application extends ma_sql_object{
 		$caption= method_exists($form, "getBreadCrumbCaption")? $form->getBreadCrumbCaption() : '?';
 		array_push($this->breadCrumb, $caption);
 		$fname = "{$this->appDir}/forms/F" . str_pad(++$this->stackTop, 4, '0', STR_PAD_LEFT);
-		$sessionFile= new ma_lib_syncFile($fname);
+		$sessionFile= new ma_sys_syncFile($fname);
 		if ( ! $sessionFile->setContent( serialize( $form ) ) ) {
 			$this->log( $this->caption( 'ERR_SERIALIZEFORM', array( 'form' => get_class( $form ) ) ), 'error' );
 		}
@@ -102,7 +102,7 @@ class ma_sys_application extends ma_sql_object{
 		while ($jump > 0 && $this->stackTop > 0) {
 			$fname = str_pad($this->stackTop--, 4, '0', STR_PAD_LEFT);
 			if (--$jump == 0) {
-				$formFile= new ma_lib_syncFile("$this->appDir/forms/F$fname");
+				$formFile= new ma_sys_syncFile("$this->appDir/forms/F$fname");
 				if ($formFile->getContent()) $form= unserialize($formFile->content);
 				else $this->log($this->caption( 'ERR_UNSERIALIZEFORM' ), 'error' );
 			}
@@ -123,7 +123,7 @@ class ma_sys_application extends ma_sql_object{
 	
 		if ($this->stackTop > 0) {
 			$fname = str_pad($this->stackTop, 4, '0', STR_PAD_LEFT);
-			$formFile= new ma_lib_syncFile("$this->appDir/forms/F$fname");
+			$formFile= new ma_sys_syncFile("$this->appDir/forms/F$fname");
 			if ($formFile->getContent()) $form= unserialize($formFile->content);
 			else $this->log($this->caption( 'ERR_UNSERIALIZEFORM' ), 'error' );
 			return $form;
@@ -137,7 +137,7 @@ class ma_sys_application extends ma_sql_object{
 	
 	private function updateTopForm($form){
 		$fname = "{$this->appDir}/forms/F" . str_pad(++$this->stackTop, 4, '0', STR_PAD_LEFT);
-		$sessionFile= new ma_lib_syncFile($fname);
+		$sessionFile= new ma_sys_syncFile($fname);
 		if ( ! $sessionFile->setContent( serialize( $form ) ) ) {
 			$this->log( $this->caption( 'ERR_SERIALIZEFORM', array( 'form' => get_class( $form ) ) ), 'error' );
 			

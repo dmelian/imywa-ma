@@ -1,5 +1,5 @@
 <?php
-class ma_lib_syncFile {
+class ma_sys_syncFile {
 
 	public $errorno;
 	public $content;
