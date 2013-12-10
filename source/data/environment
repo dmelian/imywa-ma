@@ -4,4 +4,4 @@ language = en
 authMethod = anonymous
 logType = directory
 defaultApp = pos_application
-mediaType = pos
+responseClass = ma_media_response

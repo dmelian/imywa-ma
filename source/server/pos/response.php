@@ -1,6 +1,8 @@
 <?php
 class pos_response extends ma_object{
 
+	public $documentClass= 'pos_document';
+
 	protected $content=array();
 
 	public function paint(){

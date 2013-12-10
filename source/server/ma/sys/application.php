@@ -14,6 +14,7 @@ class ma_sys_application extends ma_sql_object{
 	protected $currentForm;
 	protected $breadCrumb= array();
 	protected $globals= array();
+	protected $responseClass;
 	
 	private $appDir;
 	private $stackTop= 0;
@@ -22,6 +23,7 @@ class ma_sys_application extends ma_sql_object{
 		parent::__construct();
 
 		$this->UId= $this->newUId();
+		$this->responseClass= $environment['responseClass'];
 
 		$this->appDir= "{$environment['sessionDir']}/{$this->appName}";
 		$success= mkdir($this->appDir."/forms", 0777, true);
@@ -36,7 +38,10 @@ class ma_sys_application extends ma_sql_object{
 	public function getGlobal($key) { return $this->globals[$key]; } 
 	public function getGlobals(){ return $this->globals; }
 	
-	public function executeAction( $action, $source, $target, $options, $response ){
+	public function executeAction( $action, $source, $target, $options, &$response ){
+
+		$responseClass= $this->responseClass;
+		$response= new $responseClass();
 		
 		if ($source == $this->UId) switch ($action){
 
@@ -60,7 +65,7 @@ class ma_sys_application extends ma_sql_object{
 						
 			default:
 				if ( method_exists($this, 'OnAction') ) {
-					return $this->OnAction( $action, $target, $options, $response );
+					return $this->OnAction( $action, $target, $options );
 				} else {
 					$this->log("ERROR. Application action '{$this->appName}':'$action' not designed.");
 					return false;

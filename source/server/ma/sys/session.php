@@ -150,12 +150,6 @@ class ma_sys_session extends ma_object {
 		
 		$this->sequence++;
 		
-		$config= array_merge($this->environment, $this->request);
-		$responseClass= $this->environment['mediaType'] . "_response";
-		if ( class_exists( $responseClass ) ) $response= new $responseClass($config);
-		else $response= false; //Applications without ajax has not to define the response class.
-
-
 		if ( ! $this->executeAction( $this->request['action']
 			, $this->request['source'], $this->request['target'], $this->request['options']
 			, $response )){
@@ -164,12 +158,11 @@ class ma_sys_session extends ma_object {
 		}
 		
 		if ( !$this->request['isAjax'] ) {
-			$documentClass= $this->environment['mediaType'] . "_document";
-			$document= new $documentClass( $config );
+			$document= new $response->documentClass();
 			$this->paint( $document );
 			$document->paint( $response );
 			
-		} elseif ($response !== false) $response->paint();
+		} elseif ( $response !== false ) $response->paint();
 
 			
 		//TODO: if ($this->currentApp) $this->app[$this->currentApp]->prepareForSerialize(); // to unset the current form.
@@ -239,7 +232,7 @@ class ma_sys_session extends ma_object {
 		
 	}
 	
-	private function executeAction( $action, $source, $target, $options, $response ){
+	private function executeAction( $action, $source, $target, $options, &$response ){
 		global $_MANAGER;
 
 		$app= $this->app[$this->currentApp]; 

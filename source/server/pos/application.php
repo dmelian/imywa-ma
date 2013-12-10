@@ -3,11 +3,15 @@
 class pos_application extends ma_sys_application{
 	
 	public $appName= 'test-pos';
-	public $mediaType= 'pos';
 	public $startForm= 'pos_form';
 	public $host= 'localhost';
 	public $mainDb= 'mybusiness';
 	public $dbTextId= 'pos_dberror';
+
+	public function __construct($environment){
+		parent::__construct($environment);
+		$this->responseClass= 'pos_response';
+	}
 		
 	public function OnLoad(){
 		$this->setGlobal('business', 'mybusiness');

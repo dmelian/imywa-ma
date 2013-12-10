@@ -26,7 +26,7 @@ class ma_sys_form extends ma_sql_object {
 
 			default:
 				if ( method_exists($this, 'OnAction') ) {
-					$catched= $this->OnAction($action, $target, $options, $response);
+					$catched= $this->OnAction($action, $target, $options );
 					if ( method_exists($this, 'OnRefresh') ) $this->OnRefresh( $response );
 					return $catched;
 					
