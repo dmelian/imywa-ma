@@ -12,7 +12,7 @@ class ma_sys_session extends ma_object {
 	private $currentApp;
 	private $lastUId= 0;
 	private $lastReservedUId= 0;
-	public $UId= 0;
+	public $UId;
 	
 	public static function create($environment) {
 		
@@ -29,7 +29,6 @@ class ma_sys_session extends ma_object {
 	
 	public function __construct($environment){
 		parent::__construct();
-		$this->UId= $this->newUId();
 	
 		// Create the session folder
 		$sessionbasedir = "{$environment['usrDir']}/run/sessions/";
@@ -60,6 +59,7 @@ class ma_sys_session extends ma_object {
 			$this->environment= $environment;
 			$this->environment['sessionDir']= $this->sessionDir;
 			$this->log("Session {$this->sessionId} created");
+			$this->UId= $this->newUId();
 		}
 		
 	}
@@ -155,10 +155,13 @@ class ma_sys_session extends ma_object {
 		if ( class_exists( $responseClass ) ) $response= new $responseClass($config);
 		else $response= false; //Applications without ajax has not to define the response class.
 
-		$this->executeAction( $this->request['action']
+
+		if ( ! $this->executeAction( $this->request['action']
 			, $this->request['source'], $this->request['target'], $this->request['options']
-			, $response 
-		);
+			, $response )){
+			$this->log( "ERROR. Action not catched!. session:'{$this->sessionId}' app:'{$app->appName}'"
+				. " action:'{$this->request['action']}' source:'{$this->request['source']}'");
+		}
 		
 		if ( !$this->request['isAjax'] ) {
 			$documentClass= $this->environment['mediaType'] . "_document";
@@ -238,25 +241,34 @@ class ma_sys_session extends ma_object {
 	
 	private function executeAction( $action, $source, $target, $options, $response ){
 		global $_MANAGER;
-		
-		if ($source == $this->UId) {
-			switch ($action){
-			case 'switchApp': case 'openApp': case 'closeApp': case 'logout':
+
+		$app= $this->app[$this->currentApp]; 
+		if ($source == $this->UId) switch ($action){
+
+			case 'refresh': 
+				$source= $app->UId;
 				break;
 			
+			case 'switchApp': case 'openApp': case 'closeApp': case 'logout':
+				$this->log("ERROR. session action '$action' not implemented.");
+				return true;
+
 			default:
-				if ( method_exists($this, 'OnAction') ) $this->OnAction($action, $target, $options, $response);
+				$this->log("ERROR. Session action '$action' not designed.");
+				return false;
 
-			}
-		} else {
-			$app= $this->app[$this->currentApp]; 
-			$_MANAGER->currConnection= new ma_sql_connection( $app->host, $app->mainDb
-				, $this->user, $this->password, $app->dbTextId );
+		} 
 
-			$app->executeAction( $action, $source, $target, $options, $response );
 
-			$_MANAGER->currConnection->close();
-		}
+		$_MANAGER->currConnection= new ma_sql_connection( $app->host, $app->mainDb
+			, $this->user, $this->password, $app->dbTextId );
+
+		$catched= $app->executeAction( $action, $source, $target, $options, $response );
+
+		$_MANAGER->currConnection->close();
+
+		return $catched;
+
 	}
 	
 	private function paint($document){

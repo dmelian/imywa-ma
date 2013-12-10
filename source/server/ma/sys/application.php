@@ -38,9 +38,7 @@ class ma_sys_application extends ma_sql_object{
 	
 	public function executeAction( $action, $source, $target, $options, $response ){
 		
-
-		if ($source == $this->UId) {
-			switch ($action){
+		if ($source == $this->UId) switch ($action){
 
 			case 'init':
 				if ( method_exists( $this, 'OnLoad' ) ) $this->OnLoad();
@@ -49,27 +47,31 @@ class ma_sys_application extends ma_sql_object{
 				$this->currentForm= new $formClass();
 				$this->currentForm->executeAction($action, $this->currentForm->UId, $target, $options, $response);
 				$this->formPush($this->currentForm);
-				break;
+				return true;
 
+			case 'refresh':
+				$source=$this->topForm()->UId; 
+				break;
 
 			case 'openForm':
 			case 'closeForm': case 'switchForm': case 'formCall': case 'formReturn':
-				break;
+				$this->log("ERROR. Application action '{$this->appName}':'$action' not implemented.");
+				return true;
 						
 			default:
-				if ( method_exists($this, 'OnAction') ) $this->OnAction($action, $target, $options, $response);
-
-			}
-		
-
-		} else {
-			
-			$this->currentForm= $this->formPop();
-			$response= $this->currentForm->executeAction($action, $source, $target, $options, $response);
-			$this->formPush($this->currentForm);
+				if ( method_exists($this, 'OnAction') ) {
+					return $this->OnAction( $action, $target, $options, $response );
+				} else {
+					$this->log("ERROR. Application action '{$this->appName}':'$action' not designed.");
+					return false;
+				}
 
 		}
-
+			
+		$this->currentForm= $this->formPop();
+		$catched= $this->currentForm->executeAction($action, $source, $target, $options, $response);
+		$this->formPush($this->currentForm);
+		return $catched;
 
 	}
 	
