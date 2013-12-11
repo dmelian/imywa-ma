@@ -12,7 +12,7 @@ class pos_form extends ma_sys_form{
 
 	}
 	
-	public function OnRefresh ( $response ){
+	public function OnRefresh( $response ){
 
 		$this->call('pos_getContent');
 		foreach(array('select','menu','display') as $content){
@@ -29,7 +29,6 @@ class pos_form extends ma_sys_form{
 
 	}
 	
-
 	public function OnAction($action, $target, $options){
 
 		switch ($action){

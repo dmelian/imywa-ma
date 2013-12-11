@@ -265,8 +265,15 @@ class ma_sys_session extends ma_object {
 	}
 	
 	private function paint($document){
+		global $_MANAGER;
 		
+		$app= $this->app[$this->currentApp]; 
+		$_MANAGER->currConnection= new ma_sql_connection( $app->host, $app->mainDb
+			, $this->user, $this->password, $app->dbTextId );
+
 		$this->app[$this->currentApp]->paint($document);
+
+		$_MANAGER->currConnection->close();
 		
 	}
 	

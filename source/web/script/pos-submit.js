@@ -17,3 +17,14 @@ function pos_action( options ) {
 	document.body.appendChild( form ); 
 	form.submit();
 }
+
+function pos_buttonAction( event ){
+	
+	var pannel= event.parentElement;
+	var options= { _action: pannel.id
+		, _source: pannel.attributes.source.value
+		, _target: event.value };
+	pos_action( options );
+
+}
+

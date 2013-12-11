@@ -26,7 +26,7 @@ class ma_media_output extends ma_object{
 		echo '<body></html>';
 	}
 	
-	public function echo( $out ){ $this->buffer[]= $out; }
+	public function write( $out ){ $this->buffer[]= $out; }
 	public function addScript( $src ) { $this->script[]= $src; }
 	public function addStyle( $href ) { $this->style[]=$href; }
 	
