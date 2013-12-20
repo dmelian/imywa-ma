@@ -11,7 +11,7 @@ class pos_application extends ma_sys_application{
 
 	public function __construct($environment){
 		parent::__construct($environment);
-		$plain= true;
+		$plain= false;
 		if ($plain) {
 			$this->responseClass= 'ma_media_output';
 			$this->startForm= 'pos_plainForm';
