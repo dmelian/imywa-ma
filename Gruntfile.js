@@ -26,7 +26,7 @@ module.exports= function(grunt){
 				stripBanners: true 
 			},
 
-			dev: { src: "source/client/ma/*.wdjs", dest: "<%= cfg.webDir %>/script/ma.js" },
+			dev: { src: ["source/client/ma/*.wdjs","source/client/pos/*.wdjs"], dest: "<%= cfg.webDir %>/script/ma.js" },
 			build: { src: "source/client/ma/*.wdjs", dest: "build/web/script/ma.js" }
 		},
 
