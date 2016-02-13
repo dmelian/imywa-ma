@@ -135,7 +135,6 @@ class ma_sys_session extends ma_object {
 		
 		$this->extractRequestProperties();
 		if (!$this->currentApp){
-			
 			$appClassname= $this->environment['defaultApp'];
 			$app= new $appClassname($this->environment);
 			// database must be accessed in the application initialization. 

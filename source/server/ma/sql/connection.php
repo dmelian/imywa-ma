@@ -24,6 +24,7 @@ class ma_sql_connection extends ma_object{
 		if (!$this->conn){ 
 			$this->ErrorNo= 'ESQL00'; 
 			$this->errorMessage= $this->caption("ma_sql_error_{$this->errorNo}"); 
+			$this->log('ERR>Can not create a mysqli object.');
 			return; 
 		}
 		if ($this->conn->real_connect( $host, $user, $password, $database ) ) {
@@ -31,8 +32,11 @@ class ma_sql_connection extends ma_object{
 			$this->conn->set_charset('utf8');
 			$this->success= true;
 			$this->closed= false;
-			
-		} else $this->setError();
+				
+		} else {
+			$this->setError();
+			$this->log("ERR>Can not connect to DB. host: $host, db: $database, user: $user");
+		}
 	}
 
 	protected function setError(){
@@ -117,7 +121,10 @@ class ma_sql_connection extends ma_object{
 	
 	public function call($procedure, $params=array(), $paramDefs=false ){
 		
-		if ( $this->closed ) return;
+		if ( $this->closed ) {
+			$this->log("ERROR>Call store procedure '$procedure' on a closed connection!");
+			return;
+		}
 		$this->closeResults();
 		
 		if ( !$this->unfinishedTransaction || $this->success ){
