@@ -1,5 +1,5 @@
 <?php
-class mau_form_initial extends ma_ui_form {
+class mau_form_initial extends ma_sys_form {
 
 	
 	protected function OnPaint($document){

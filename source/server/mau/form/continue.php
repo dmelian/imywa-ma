@@ -1,5 +1,5 @@
 <?php
-class mau_form_continue extends ma_ui_form {
+class mau_form_continue extends ma_sys_form {
 
 /*	public function executeAction($action, $source, $target, $option, $response){
 		
